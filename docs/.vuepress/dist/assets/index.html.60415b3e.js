@@ -1,0 +1,1 @@
+const e={key:"v-71b3ae87",path:"/interview/",title:"\u9762\u8BD5\u7ECF\u5386",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1650454535e3,contributors:[{name:"mrkleo",email:"2315831906@qq.com",commits:1}]},filePathRelative:"interview/README.md"};export{e as data};
