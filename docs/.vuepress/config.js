@@ -3,7 +3,7 @@ module.exports = {
     lang: 'zh-CN',
     title: 'Mr.KLeo的分享网站',
     description: '知行合一',
-    base: '/MrKLeoBlog/',
+    base: '/blog/',
 
     // 主题和它的配置
     theme: '@vuepress/theme-default',
