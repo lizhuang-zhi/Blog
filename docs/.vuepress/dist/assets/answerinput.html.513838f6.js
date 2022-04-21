@@ -1,0 +1,1 @@
+const e={key:"v-4fe5c4b7",path:"/knowledge/answerinput.html",title:"\u6839\u636E\u4EE3\u7801\u770B\u8F93\u51FA\uFF08\u7CFB\u5217\uFF09",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:165052565e4,contributors:[{name:"mrkleo",email:"2315831906@qq.com",commits:1}]},filePathRelative:"knowledge/answerinput.md"};export{e as data};

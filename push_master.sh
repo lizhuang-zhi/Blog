@@ -6,6 +6,6 @@ cd /Users/mrkleo/Program/project/FrontEnd/Web/vue-press
 
 git add .
 git commit -m 'update master'
-git push -u master
+git push git@github.com:lizhuang-zhi/blog.git --all
 
 cd -

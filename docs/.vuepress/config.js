@@ -60,7 +60,9 @@ module.exports = {
         sidebar: {
             '/interview/': [{
                 text: '复盘面试经历',
-                children: ['/interview/README.md'],
+                children: [
+                    '/interview/main.md'
+                ],
             }, ],
             '/knowledge/': [{
                 text: '面试题',
@@ -93,7 +95,5 @@ module.exports = {
         },
         editLink: false,
     },
-
-
 
 }
