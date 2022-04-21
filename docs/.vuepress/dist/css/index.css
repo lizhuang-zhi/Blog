@@ -1,0 +1,42 @@
+.navbar .logo {
+    border-radius: 20px;
+}
+
+.back-to-top {
+    cursor: pointer;
+    position: fixed;
+    bottom: 5rem;
+    right: 5rem;
+    width: 4rem;
+    height: 4rem;
+    background-image: url('../images/backup.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-origin: 0% 0%;
+    z-index: var(--back-to-top-z-index);
+}
+.back-to-top:hover {
+    animation: swing .4s ease 1 forwards;
+}
+
+@keyframes swing {
+    0% {
+        transform: rotate(-10deg);
+    }
+
+    25% {
+        transform: rotate(10deg);
+    }
+
+    50% {
+        transform: rotate(-10deg);
+    }
+
+    75% {
+        transform: rotate(10deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}

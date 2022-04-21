@@ -1,0 +1,1 @@
+const e={key:"v-40649bc8",path:"/wrongexam/",title:"\u7B14\u8BD5\u9519\u9898\u8BB0\u5F55",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1650454535e3,contributors:[{name:"mrkleo",email:"2315831906@qq.com",commits:1}]},filePathRelative:"wrongexam/README.md"};export{e as data};

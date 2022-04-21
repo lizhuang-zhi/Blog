@@ -2,14 +2,42 @@ module.exports = {
     // 站点配置
     lang: 'zh-CN',
     title: 'Mr.KLeo的分享网站',
-    description: '知行合一',
+    description: '自我成长之路',
     base: '/blog/',
+    head: [
+        ['link', {
+            rel: 'stylesheet',
+            href: '/css/index.css'
+        }],
+    ],
+    plugins: [
+        [
+            '@vuepress/plugin-search',
+            {
+                // 排除首页
+                isSearchable: (page) => page.path !== '/',
+                isSearchable: (page) => page.path !== '/wrongexam/',
+            },
+            {
+                locales: {
+                    '/': {
+                        placeholder: 'Search',
+                    },
+                    '/zh/': {
+                        placeholder: '搜索',
+                    },
+                },
+            },
+            ['s', '/']
+        ],
+    ],
 
     // 主题和它的配置
     theme: '@vuepress/theme-default',
     themeConfig: {
         // logo: 'https://vuejs.org/images/logo.png',
         home: '/',
+        logo: '/images/logo.JPG',
         // 顶部导航栏
         navbar: [{
                 text: '面经复盘',
@@ -20,7 +48,7 @@ module.exports = {
                 link: '/knowledge/',
             },
             {
-                text: '笔试错题记录',
+                text: '笔试错题总结',
                 link: '/wrongexam/',
             },
             {
@@ -29,44 +57,43 @@ module.exports = {
             },
         ],
         repo: 'https://github.com/lizhuang-zhi',
-        sidebar: "auto"
-
+        sidebar: {
+            '/interview/': [{
+                text: '复盘面试经历',
+                children: ['/interview/README.md'],
+            }, ],
+            '/knowledge/': [{
+                text: '面试题',
+                children: [
+                    '/knowledge/css.md',
+                    '/knowledge/js.md',
+                    '/knowledge/http.md',
+                    '/knowledge/vue.md',
+                    '/knowledge/wxprogram.md',
+                    '/knowledge/webpack.md',
+                    '/knowledge/algorithm.md',
+                    '/knowledge/designmode.md',
+                    '/knowledge/summary.md',
+                    '/knowledge/answerinput.md',
+                    '/knowledge/frontopti.md',
+                ],
+            }, ],
+            '/wrongexam/': [{
+                text: '笔试错题总结',
+                children: [
+                    '/wrongexam/main.md'
+                ],
+            }, ],
+            '/books/': [{
+                text: '书籍分享',
+                children: [
+                    '/books/main.md'
+                ],
+            }, ],
+        },
+        editLink: false,
     },
-}
 
-// '/knowledge/': [{
-//     text: 'CSS',
-//     collapsible: true,
-//     children: ['/knowledge/test.md'],
-// },
-// {
-//     text: 'JavaScript',
-//     collapsible: true,
-//     children: ['/knowledge/'],
-// },
-// {
-//     text: 'Vue',
-//     collapsible: true,
-//     // children: ['/knowledge/'],
-// },
-// {
-//     text: '微信小程序',
-//     collapsible: true,
-//     // children: ['/knowledge/'],
-// },
-// {
-//     text: 'HTTP',
-//     collapsible: true,
-//     children: ['/reference/bundler/vite.md', '/reference/bundler/webpack.md'],
-// },
-// {
-//     text: 'Webpack',
-//     collapsible: true,
-//     children: ['/reference/bundler/vite.md', '/reference/bundler/webpack.md'],
-// },
-// {
-//     text: '知识小结',
-//     collapsible: true,
-//     children: ['/reference/bundler/vite.md', '/reference/bundler/webpack.md'],
-// }
-// ],
+
+
+}
