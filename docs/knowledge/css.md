@@ -947,3 +947,402 @@ Flex布局是2009年W3C组织提出的一种不同于传统布局的布局方式
 
 参考: [Flex 布局教程：语法篇 - 阮一峰的网络日志](http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html)
 
+## background 属性总结
+
+background 的所有属性
+
+```bash
+1. background (是下面所有属性的简写)
+2. background-color
+3. background-position
+4. background-size
+5. background-repeat
+6. background-origin
+7. background-clip
+8. background-attachment
+9. background-image
+```
+
+### background-color
+
+该属性以下几类值
+
+```css
+.box {
+  background-color: <color> | transparent | inherit; /* 默认值为 transparent, 表示透明的 */
+}
+```
+
+这里的`color`可设置为`red`、`rgb(255,0,255)`、`#00ff00`
+
+`inherit`: 表示继承父元素
+
+### background-position
+
+这里有三种设置的方式, 如下
+
+```css
+.box {
+    width: 600px;
+    height: 600px;
+    background-image: url('https://tva1.sinaimg.cn/large/e6c9d24ely1h1hbdtmwgtj21900u00vq.jpg');
+    /*  
+  			方式一: 
+        显示图片左上位置 (这里的两个值在 top bottom left right center 中选择)
+        
+        如果只填一个值, 则默认另外一个为 center
+
+        可选: 
+        * 左中右的上中下 (9种)
+    */
+    /* background-position: center bottom;   */
+
+    /* 
+			  方式二:
+        这里以图片的
+        - 左上角为 0% 0%
+        - 右下角为 100% 100%
+    */
+    /* background-position: 100% 100%;    */
+
+    /* 
+  			方式三:
+        显示距离图片右边框 15% 和 下边框 20% 的部分区域
+    */
+    /* background-position: right 15% bottom 20%; */
+  
+  	/* 
+  			方式四: 
+        如果是 百分比 + 字符串(left\right\center\bottom\top)
+
+        如果 第一个设置了 百分比(表示水平方向上), 那么第二个属性值只能为 top | center | bottom
+        如果 第二个设置了 百分比(表示垂直方向上), 那么第一个属性值只能为 left | center | right
+    */
+    background-position: right 50%;
+}
+```
+
+### background-size
+
+设置属性值有
+
+```css
+1. cover
+2. containe
+3. 具体值(100px) | 百分比(40%)
+```
+
+效果与解释
+
+```css
+.box {
+    width: 600px;
+    height: 600px;
+    background-image: url('https://tva1.sinaimg.cn/large/e6c9d24ely1h1hbdtmwgtj21900u00vq.jpg');
+    /* 
+        设置图片的宽度为 600px, 高度为 300px 如果存在
+        剩余空间, 则通过重复进行填补, 此时如果设置 
+        background-repeat: no-repeat; 则会把剩余部分
+        给去除(图片内容)
+
+        这里也可以通过百分比设置图片宽高, 也可以混用
+    */
+    /* background-size: 600px 300px; */
+    /* background-size: 50% 300px; */
+
+    /* 
+        显示核心部分, 如果设置 background-position 则
+        显示对应位置的核心部分
+    */
+    /* background-size: cover; */
+
+    /* 
+        在保证图片的横纵比的情况下, 显示图片, 如果有剩余部分则用
+        图片内容填充
+    */
+    background-size: contain;
+}
+```
+
+### background-repeat
+
+```css
+1. repeat 默认值(水平和垂直都重复)
+2. repeat-x  只有水平上的重复
+3. repeat-y  只有垂直上的重复
+4. no-repeat  水平和垂直都不重复
+5. space  图像尽可能重复,但不会裁剪
+6. around  参看: https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-repeat
+```
+
+具体解释: 
+
+```css
+.box {
+    width: 600px;
+    height: 600px;
+    background-image: url('https://tva1.sinaimg.cn/large/e6c9d24ely1h1hbdtmwgtj21900u00vq.jpg');
+
+    /* 设置图片的宽高 */
+    background-size: 300px 200px;
+
+    /* 默认向垂直和水平方向上重复 */
+    /* background-repeat: repeat; */
+
+    /* 只有水平方向上的重复 */
+    /* background-repeat: repeat-x; */
+
+    /* 只有垂直方向上的重复 */
+    /* background-repeat: repeat-y; */
+
+    /* 水平和垂直都不重复 */
+    background-repeat: no-repeat;
+
+    /* 图像尽可能的重复, 但不会裁剪(可将图片宽带换成400px来看效果) */
+    /* background-repeat: space; */
+
+    /* 
+        具体参看: https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-repeat
+    */
+    /* background-repeat: aroud; */
+}
+```
+
+### background-origin
+
+```css
+1. padding-box
+2. border-box  
+3. content-box  
+```
+
+> 注意：当使用 [`background-attachment`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-attachment) 为fixed时，该属性将被忽略不起作用。
+
+```css
+body {
+    margin: 0;
+}
+
+.box {
+    width: 600px;
+    height: 600px;
+    padding:35px;
+    border: 20px solid pink;
+    background-image: url('https://tva1.sinaimg.cn/large/e6c9d24ely1h1hbdtmwgtj21900u00vq.jpg');
+
+    /* 设置图片的宽高 */
+    background-size: 300px 200px;
+    background-repeat: no-repeat;
+
+    /* 
+        border-box 和 padding-box 都是依靠padding左上角为参考点, 
+        但是在其他相同的情况下, padding-box 显示的图片比 border-box大
+    */
+    /* background-origin: border-box; */
+    /* background-origin: padding-box; */
+
+    /* 
+        content-box 会让背景图以 content 左上角为参考点
+    */
+    background-origin: content-box;
+}
+```
+
+### background-clip
+
+```css
+1. border-box  /* 裁剪到 border */
+2. padding-box  /* 裁剪到 padding */
+3. content-box   /* 裁剪到 content */
+```
+
+区别展示: 
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>菜鸟教程(runoob.com)</title>
+    <style>
+        #example1 {
+            border: 10px dotted black;
+            padding: 35px;
+            background: yellow;
+        }
+        /* 裁剪到 boder */
+        #example2 {
+            border: 10px dotted black;
+            padding: 35px;
+            background: yellow;
+            background-clip: border-box;
+        }
+        /* 裁剪到 padding */
+        #example3 {
+            border: 10px dotted black;
+            padding: 35px;
+            background: yellow;
+            background-clip: padding-box;
+        }
+        /* 裁剪到 content */
+        #example4 {
+            border: 10px dotted black;
+            padding: 35px;
+            background: yellow;
+            background-clip: content-box;
+        }
+    </style>
+</head>
+<body>
+    <p>没有背景剪裁 (border-box没有定义):</p>
+    <div id="example1">
+        <h2>Lorem Ipsum Dolor</h2>
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet
+            dolore magna aliquam erat volutpat.</p>
+    </div>
+
+    <p>background-clip: border-box:</p>
+    <div id="example2">
+        <h2>Lorem Ipsum Dolor</h2>
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet
+            dolore magna aliquam erat volutpat.</p>
+    </div>
+
+    <p>background-clip: padding-box:</p>
+    <div id="example3">
+        <h2>Lorem Ipsum Dolor</h2>
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet
+            dolore magna aliquam erat volutpat.</p>
+    </div>
+
+    <p>background-clip: content-box:</p>
+    <div id="example4">
+        <h2>Lorem Ipsum Dolor</h2>
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet
+            dolore magna aliquam erat volutpat.</p>
+    </div>
+</body>
+</html>
+```
+
+### background-attachment
+
+```css
+1. scroll /* 背景图片随着页面的滚动而滚动 => 默认值 */
+2. fixed  /* 背景图片不会随着页面的滚动而滚动 */
+3. local  /* 背景图片会随着元素内容的滚动而滚动 */
+```
+
+测试效果感觉`scroll`和`local`没太大区别, 应该是测试太简单, 没有体现出区别
+
+`scroll`和`local`效果查看: https://code.juejin.cn/pen/7089245422266843144
+
+效果`fixed`查看: https://code.juejin.cn/pen/7089241102028374050
+
+### background-image
+
+```css
+1. none  /* 默认值 */
+2. url('图像url')  
+3. linear-gradient()  /* 创建一个从上到下, 渐变的图像 */
+4. radial-gradient()  /* 创建一个径向渐变的图像 */
+5. repeating-linear-gradient()   /* 创建重复的线性渐变图像 */
+6. repeating-radial-gradient()   /* 创建重复的径向渐变图像 */
+```
+
+`url()`的形式可同时写多个图像`url`, 但是要注意图片之间的透明和覆盖问题, 不然无法同时看到两个图片
+
+展示效果: https://code.juejin.cn/pen/7089248733170237448
+
+## 实现三列布局
+
+可以利用 `Flex` 布局和 `Grid`布局
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+    				margin: 0;
+        }
+        .container {
+            display: flex;
+        }
+        .container .item {
+            height: 100px;
+            background-color: orange;
+            border: 2px solid orangered;
+            /* 
+                flex-grow: 1 (默认为0)
+                flex-shrink: 1 (默认为1)
+                flex-basis: 0 (默认为auto)
+            */
+            flex: 1 1 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="item">白日依山尽，黄河入海流。欲穷千里目，更上一层楼。</div>
+        <div class="item">2</div>
+        <div class="item">3</div>
+    </div>
+</body>
+
+</html>
+```
+
+查看效果: https://code.juejin.cn/pen/7089254600645017608
+
+## 两列布局(左边固定宽, 右边自适应)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+        }
+        .container {
+            display: flex;
+        }
+        .container .item:nth-child(1) {
+            height: 100px;
+            background-color: orange;
+
+            width: 200px;
+        }
+        .container .item:nth-child(2) {
+            height: 100px;
+            background-color: orangered;
+
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- 
+        左边固定宽度, 右边自适应宽度
+     -->
+    <div class="container">
+        <div class="item">固定宽度 200px</div>
+        <div class="item">右边自适应宽度</div>
+    </div>
+</body>
+
+</html>
+```
+
+查看代码效果: https://code.juejin.cn/pen/7089256142051737637
