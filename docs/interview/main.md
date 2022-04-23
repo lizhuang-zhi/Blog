@@ -1228,7 +1228,69 @@ https://www.bilibili.com/video/BV1xq4y1D7Ep/?spm_id_from=333.788.recommend_more_
 
 5. 说一下 typeof 表达式, 如何判断类型, 判断哪些类型
 
+   使用`typeof`判断基本数据类型, 则返回其对应的类型的字符串, 除了 `null`判断的时候返回的是 `object`
+
+   如果判断的是数组或者对象, 则返回 `object`
+
+   如果判断的是函数, 则返回`function`
+
+   ```js
+   // 基础数据类型
+   let var1 = 11;
+   let var2 = 'str';
+   let var3 = true;
+   let var4 = undefined;
+   let var5 = null;     // special !!
+   let var6 = Symbol('tag');
+   let var7 = 123n;
+   
+   // 引用数据类型
+   let var8 = {};
+   let var9 = [];
+   let var10 = function() {};
+   
+   console.log(typeof var1);  // number
+   console.log(typeof var2);  // string
+   console.log(typeof var3);  // boolean
+   console.log(typeof var4);  // undefined
+   console.log(typeof var5);  // object  special !!
+   console.log(typeof var6);  // symbol
+   console.log(typeof var7);  // bigint
+   
+   console.log(typeof var8);  // object
+   console.log(typeof var9);  // object
+   console.log(typeof var10);  // function
+   ```
+
 6. 说一下new关键字的生成实例的过程(new原理)
+
+   1. 创建一个新对象
+
+   2. 将这个新对象的`__proto__`属性指向构造函数的原型对象
+
+   3. 调用构造函数, 并将构造函数中的`this`指向这个新创建的对象 (简单说就是给对象添加属性)
+
+   4. 如果该构造函数返回值是一个对象, 则返回这个对象; 否则返回第一步新创建的这个对象
+
+   模拟实现: 
+
+   ```js
+   function Person(name, age) {
+       this.name = name;
+       this.age = age;
+   }
+   
+   // 手写实现 new 代码
+   function ImplementNew() {
+       let obj = {};
+       obj.__proto__ = Person.prototype;
+       let result = Person.call(obj, ...arguments);
+       return typeof result == 'object' ? result : obj;
+   }
+   
+   let person = ImplementNew('leo', 21);
+   console.log(person);   // {name: 'leo', age: 21}
+   ```
 
 7. **说一下Vue2的改写了数组哪些方法?**(没问, 换一个问题改变原数组的方法有哪些?)  ❌ 🌿
 
@@ -1238,7 +1300,22 @@ https://www.bilibili.com/video/BV1xq4y1D7Ep/?spm_id_from=333.788.recommend_more_
 
 8. 那你说一下shift和unshift? unshift的返回值是什么? (这里紧张了一下, 口误差点说错了, giao)
 
+   shift 和 unshift 都会改变原数组
+
+   shift 是从原数组的头部删掉一个元素, 并返回删掉的元素
+
+   unshift 是从原数组的头部添加一个元素, 并返回添加后数组的长度
+
 9. 说一下数组的reduce方法? 以及他的参数
+
+   `reduce`方法需要传入两个参数:
+
+   1. 函数 (对应的参数有四个)
+      1. previous: 之前操作的累积结果
+      2. current: 当前元素
+      3. currentIndex: 当前元素的索引
+      4. array: 调用数组
+   2. initValue
 
 10. 说一下reduce方法的具体使用场景?  ❌
 
@@ -1270,7 +1347,9 @@ https://www.bilibili.com/video/BV1xq4y1D7Ep/?spm_id_from=333.788.recommend_more_
 
 13. 防抖和节流的区别?
 
-14. 那对于刚才的业务题, 有没有更加通用的方法?以后就不用写了   ❌
+    防抖是取最后一次, 而节流是指在匀速的执行某一个任务.
+
+14. 那对于刚才的业务题, 有没有更加通用的方法? 以后就不用写了   ❌
 
     这个应该是就是想让我从请求工具的角度去说
 
