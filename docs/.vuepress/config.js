@@ -7,7 +7,7 @@ module.exports = {
     head: [
         ['link', {
             rel: 'stylesheet',
-            href: '/css/index.css'
+            href: './css/index.css'
         }],
     ],
     plugins: [

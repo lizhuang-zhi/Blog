@@ -991,7 +991,7 @@ D. 4,1,3,5    ✅
 
 参考: [正则表达式 &#8211; 元字符 | 菜鸟教程](https://www.runoob.com/regexp/regexp-metachar.html)
 
-## Why <hr> tag is used in HTML page?
+## Why tag is used in HTML page?
 
 A. For creating table
 
@@ -1153,9 +1153,9 @@ D. mount -o ro /dev/sdb1 /tools   ✅
 
 解析: 
 
-1、mount ：挂载 
-2、-o ro ：只读；  
-3、-r ：只读挂载
+1. mount ：挂载 
+2. -o ro ：只读
+3. -r ：只读
 
 ## 若串S=”UP！UP！JD”，则其子串的数目
 
@@ -1169,7 +1169,11 @@ n: 字符长度
 
 ## 在bash编程中,算术比较大于、大于等于的运算符是（   ）
 
-`ge 和 gt`
+`gt 和 ge`
+
+扩展:
+
+`gt大于，ge大于或等于，ne是不等于，eq是等于，lt小于，le小于或等于`
 
 ## 下面有关值类型和引用类型描述正确的是（）？
 
