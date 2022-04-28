@@ -52,6 +52,10 @@ module.exports = {
                 link: '/wrongexam/',
             },
             {
+                text: '新知巩固',
+                link: '/review/',
+            },
+            {
                 text: '编程书籍资源',
                 link: '/books/',
             },
@@ -84,6 +88,12 @@ module.exports = {
                 text: '笔试错题总结',
                 children: [
                     '/wrongexam/main.md'
+                ],
+            }, ],
+            '/review/': [{
+                text: '巩固新知识',
+                children: [
+                    '/review/main.md'
                 ],
             }, ],
             '/books/': [{

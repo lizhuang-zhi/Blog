@@ -1460,3 +1460,33 @@ Node10版本端运行结果：`timer1=>timer2=>promise1=>promise2`
 3. ES6异步加载, CommonJS是同步加载
 
 参考: [CommonJS和ES6模块有什么区别! - 掘金](https://juejin.cn/post/7048139060983889950)
+
+## slice、substring、substr区别
+
+```js
+let str = "hello world";
+
+/* 
+    1. slice和substring传入的参数都是start、end; 但是
+       slice的参数可以是负数, 而substring不行
+    2. substr的参数传入的是开始索引和要提取的长度
+*/
+console.log(str.slice(0, 3));   // hel
+console.log(str.substring(0, 4));  // hell
+console.log(str.substr(0, 2));  // he
+
+/* 
+    -- 对于负数, 重点讲下 --
+    1. substring (同时传两个参数)
+        * 都是负数, 则返回空字符串
+        * 一正一负, 取 [0, 正数 - 1]
+    2. substr
+        * 都是负数, 则返回空字符串
+        * 左正右负, 则返回空字符串
+        * 左负右正, 首先左边是指 (字符串长度 + 该负数 => 开始下标索引), 右边正数指要提取长度
+*/
+console.log(str.slice(0, -1));  // hello worl
+console.log(str.substring(-7, -5));  // 空字符串
+console.log(str.substr(-3, 2));  // rl
+```
+
