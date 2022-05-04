@@ -50,7 +50,7 @@ tsc -V
      tsc xxx.ts
      ```
 
-## 类型声明
+## 类型声明(简述)
 
 ```typescript
 // 声明一个变量a，同时指定它的类型为number
@@ -1399,10 +1399,10 @@ let myAdd = function(x, y) {
 为上面的函数添加类型:
 
 ```typescript
-function add(x: number, y: number) {
+function add(x: number, y: number): number {
     return x + y;
 }
-let myAdd = function(x: number, y: number) {
+let myAdd = function(x: number, y: number): number {
     return x + y;
 }
 ```
@@ -1451,13 +1451,1361 @@ foo(11, 22, 33, 44);   // [22, 33, 44]
 
 #### 函数重载
 
+函数重载: 函数名相同, 而形参不同的多个函数
 
+在 JS 中, 实参和形参可以不匹配. 所以在 JS 中没有重载的概念. 而对于 TS 这种强类型语言来说是存在的
 
+```typescript
+// 重载函数声明
+function add(x: string, y: string): string
+function add(x: number, y: number): number
 
+// 定义函数实现
+function add(x: string | number, y: string | number) {
+    // 在实现上我们要注意严格判断两个参数的类型是否相等，而不能简单的写一个 x + y
+    if (typeof x === 'string' && typeof y === 'string') {
+        return x + y
+    } else if (typeof x === 'number' && typeof y === 'number') {
+        return x + y
+    }
+}
+
+console.log(add(1, 2))
+console.log(add('a', 'b'))
+// console.log(add(1, 'a')) // error
+```
 
 ### 泛型
 
+#### 引入
 
+指的是在定义接口、类、函数时, 不预先指定具体的类型, 而在使用的时候再指定具体类型的一种特性。
+
+```typescript
+function createArray(value: any, count: number): any[] {
+    const arr: any[] = []
+    for (let index = 0; index < count; index++) {
+        arr.push(value)
+    }
+    return arr
+}
+
+const arr1 = createArray(11, 3)
+const arr2 = createArray('aa', 3)
+console.log(arr1[0].toFixed(), arr2[0].split(''))  // 11 ['a', 'a']
+```
+
+#### 使用泛型
+
+对于前面的代码, 我们可以将使用泛型来进行改造, 将`value`值的类型通过泛型设置, 在调用函数时再传入具体类型
+
+```typescript
+function createArray2<T>(value: T, count: number) {
+    const arr: Array<T> = []
+    for (let index = 0; index < count; index++) {
+        arr.push(value)
+    }
+    return arr
+}
+
+const arr3 = createArray2<number>(11, 3)
+console.log(arr3[0].toFixed())  // 11
+const arr4 = createArray2<string>('aa', 3)
+console.log(arr4[0].split(''))  // ['a', 'a']
+```
+
+#### 多个泛型参数的函数
+
+一个函数可以定义多个泛型参数
+
+```typescript
+function swap<K, V>(a: K, b: V): [K, V] {
+    return [a, b]
+}
+const result = swap<string, number>('abc', 123)
+console.log(result[0].length, result[1].toFixed())  // 3 '123'
+```
+
+#### 泛型接口
+
+在定义接口时, 为接口中的属性或方法定义泛型类型
+在使用接口时, 再指定具体的泛型类型
+
+```typescript
+interface IbaseCRUD<T> {
+    data: T[]
+    add: (t: T) => void
+    getById: (id: number) => T
+}
+
+class User {
+    id?: number; //id主键自增
+    name: string; //姓名
+    age: number; //年龄
+
+    constructor(name: string, age: number) {
+        this.name = name
+        this.age = age
+    }
+}
+
+class UserCRUD implements IbaseCRUD<User> {
+    data: User[] = []
+
+    add(user: User): void {
+        user = { ...user, id: Date.now() }
+        this.data.push(user)
+        console.log('保存user', user.id)
+    }
+
+    getById(id: number): User {
+        let result = this.data.find(item => item.id === id)
+        // 判断是否找到对应的 user, 如果没找到直接返回数组第一个 user 元素, 
+        // 因为该函数的返回值必须是 user
+        return typeof result == "undefined" ? this.data[0] : result
+    }
+}
+
+const userCRUD = new UserCRUD()
+userCRUD.add(new User('tom', 12))  // 保存user 1651203579705
+userCRUD.add(new User('tom2', 13))  // 保存user 1651203579705
+console.log(userCRUD.data)  
+/* 
+    [
+        {
+            age: 12,
+            id: 1651203579705,
+            name: "tom"
+        },
+        {
+            age: 13,
+            id: 1651203579705,
+            name: "tom2"
+        }
+    ]
+*/
+```
+
+#### 泛型类
+
+```typescript
+class MyClass<T> {
+    name: T
+    constructor(name: T) {
+        this.name = name;
+    }
+}
+
+let person: MyClass<string> = new MyClass('leo');
+console.log(person);  // MyClass {name: 'leo'}
+```
+
+#### 泛型约束
+
+如果我们直接对一个泛型参数取 `length` 属性, 会报错, 因为这个泛型根本就不知道它有这个属性
+
+```typescript
+// 没有泛型约束
+function fn <T>(x: T): void {
+  // console.log(x.length)  // error
+}
+```
+
+我们可以使用泛型约束来实现
+
+```typescript
+interface Lengthwise {
+  length: number;
+}
+
+// 指定泛型约束
+function fn2 <T extends Lengthwise>(x: T): void {
+  console.log(x.length)
+}
+```
+
+我们需要传入符合约束类型的值，必须包含必须 `length` 属性：
+
+```typescript
+fn2('abc')  // 3
+// fn2(123)  // error  number没有length属性
+```
 
 ### 其他
+
+#### 声明文件
+
+参考: https://www.runoob.com/typescript/ts-ambient.html
+
+#### 内置对象
+
+JavaScript 中有很多内置对象，它们可以直接在 TypeScript 中当做定义好了的类型。
+
+内置对象是指根据标准在全局作用域（Global）上存在的对象。这里的标准是指 ECMAScript 和其他环境（比如 DOM）的标准。
+
+1. ECMAScript 的内置对象
+
+> Boolean
+> Number
+> String
+> Date
+> RegExp
+> Error 
+
+```typescript
+/* 1. ECMAScript 的内置对象 */
+let b: Boolean = new Boolean(1)
+let n: Number = new Number(true)
+let s: String = new String('abc')
+let d: Date = new Date()
+let r: RegExp = /^1/
+let e: Error = new Error('error message')
+b = true
+// let bb: boolean = new Boolean(2)  // error
+```
+
+1. BOM 和 DOM 的内置对象
+
+> Window
+> Document
+> HTMLElement
+> DocumentFragment
+> Event
+> NodeList
+
+```typescript
+const div: HTMLElement | null = document.getElementById('test')
+const divs: NodeList = document.querySelectorAll('div')
+document.addEventListener('click', (event: MouseEvent) => {
+  console.dir(event.target)
+})
+const fragment: DocumentFragment = document.createDocumentFragment()
+```
+
+# Vue3
+
+## 认识Vue3
+
+1. 了解相关信息
+
+- Vue.js 3.0 "One Piece" 正式版在今年9月份发布
+- 2年多开发, 100+位贡献者, 2600+次提交, 600+次PR
+- **Vue3支持vue2的大多数特性**
+- **更好的支持Typescript**
+
+2) 性能提升:
+
+- 打包大小减少41%
+- 初次渲染快55%, 更新渲染快133%
+- 内存减少54%
+- **使用Proxy代替defineProperty实现数据响应式**
+- **重写虚拟DOM的实现和Tree-Shaking**
+
+3. 新增特性
+
+- **Composition (组合) API**
+- setup
+  - ref 和 reactive
+  - computed 和 watch
+  - 新的生命周期函数
+  - provide与inject
+  - ...
+- 新组件
+  - Fragment - 文档碎片
+  - Teleport - 瞬移组件的位置
+  - Suspense - 异步加载组件的loading界面
+- 其它API更新
+  - 全局API的修改
+  - 将原来的全局API转移到应用对象
+  - 模板语法变化
+
+## 创建Vue3项目
+
+### 使用 Vue-Cli
+
+文档: https://cli.vuejs.org/zh/guide/creating-a-project.html#vue-create
+
+```bash
+## 安装或者升级
+npm install -g @vue/cli
+## 保证 vue cli 版本在 4.5.0 以上
+vue --version
+## 创建项目
+vue create my-project
+```
+
+然后的步骤 ( 此时的 vue cli 为 4.5.14 )
+
+- Please pick a preset - 选择 ***Manually select features***
+- Check the features needed for your project - 选择上 ***TypeScript*** ，特别注意点空格是选择，点回车是下一步
+- Choose a version of Vue.js that you want to start the project with - 选择 ***3.x (Preview)***
+- Use class-style component syntax - 直接回车
+- Use Babel alongside TypeScript - 直接回车
+- Pick a linter / formatter config - 直接回车
+- Use history mode for router? - 直接回车
+- Pick a linter / formatter config - 直接回车
+- Pick additional lint features - 直接回车
+- Where do you prefer placing config for Babel, ESLint, etc.? - 直接回车
+- Save this as a preset for future projects? - 直接回车
+
+### 使用Vite创建
+
+- 文档: https://v3.cn.vuejs.org/guide/installation.html
+- vite 是一个由原生 ESM 驱动的 Web 开发构建工具。在开发环境下基于浏览器原生 ES imports 开发，
+- 它做到了***本地快速开发启动***, 在生产环境下基于 Rollup 打包。
+  - 快速的冷启动，不需要等待打包操作；
+  - 即时的热模块更新，替换性能和模块数量的解耦让更新飞起；
+  - 真正的按需编译，不再等待整个应用编译完成，这是一个巨大的改变。
+
+```bash
+npm init vite-app <project-name>
+cd <project-name>
+npm install
+npm run dev
+```
+
+## Composition API
+
+### 常用部分
+
+#### setup
+
+* 新的option, 所有的组合API函数都在此使用, 只在初始化时执行一次
+
+* 函数如果返回对象, 对象中的属性或方法, 模板中可以直接使用
+
+  ```vue
+  <template>
+    <div>哈哈, 我又tm帅了</div>
+  
+    <!-- 页面显示 10 -->
+    <div>{{ num }}</div>
+  </template>
+  
+  <script lang="ts">
+  import { defineComponent } from "vue";
+  
+  export default defineComponent({
+    name: "App",
+    components: {},
+    setup(props) {
+      console.log("i'm coming!!");
+      const num = 10;
+      return {
+        num,
+      };
+    },
+  });
+  </script>
+  
+  <style>
+  </style>
+  ```
+
+#### setup细节
+
+##### setup 的执行时机
+
+1. 在`beforeCreate`之前执行, 此时的组件对象还没有创建
+2. 由于当前组件对象还未创建, 所以在`setup`中调用`this`返回`undefined`, 故不能通过`this`来访问`data/computed/methods /props`
+3. 其实所有的`composition API`相关回调函数中也都不可以
+
+具体代码: 
+
+`/components/Child.vue`
+
+```vue
+<template>
+  <h3>Child 子级组件</h3>
+  <div>子级组件message: {{ message }}</div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
+  name: "Child",
+  props: ["message"],
+  beforeCreate() {
+    console.log("beforeCreate执行了");
+  },
+  // Vue完成挂载, 在这之前 DOM 渲染完成
+  mounted() {
+    console.log("mounted执行了");
+  },
+  /* 
+    1. setup 在 beforeCreate 之前调用
+    2. setup 执行时, 当前组件还未创建, 所以此时调用 this 为 undefined
+  */
+  setup() {
+    console.log(this);  // undefined
+    console.log("setup执行了");
+    return {};
+  },
+});
+</script>
+
+<style>
+</style>
+```
+
+##### setup 的返回值
+
+* 返回一个对象: 为模版提供数据, 可直接使用返回对象的属性和方法
+* setup 返回的对象中的属性和 data 中的属性组合成为组件对象的属性
+* setup 返回的方法和 methods 返回的方法合并成为组件对象的方法; **如果有重名, setup优先**
+* 一般不要混合使用: methods 中可以访问 setup 提供的属性和方法, 但在 setup 方法中不能访问 data 和 methods
+* setup 不能是一个 async 函数: 因为返回值不再是 return 的对象, 而是 promise, 模板就看不到 return 对象中的属性数据
+
+实例代码
+
+`/components/Child.vue`
+
+```vue
+<template>
+  <h3>Child 子级组件</h3>
+  <div>子级组件message: {{ message }}</div>
+  <div>{{ count }}</div>
+  <button @click="showMsg">showMsg</button>
+  <button @click="showMsg2">showMsg2</button>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
+  name: "Child",
+  props: ["message"],
+  setup() {
+    console.log(this); // undefined
+    // 报错, 因为连this都访问不到, 更访问不到 data 中的属性
+    // console.log(this.count); 
+
+    console.log("setup执行了");
+    // setup 中定义的属性
+    const job = "great job";
+    function showMsg2() {
+      console.log(this.count); // 10
+      console.log("setup中showMsg2的方法");
+    }
+    return {
+      job,
+      showMsg2,
+    };
+  },
+  data() {
+    return {
+      count: 10,
+    };
+  },
+  methods: {
+    showMsg() {
+      console.log(this.job);  // great job
+      console.log("methods中showMsg的方法");
+    },
+  },
+});
+</script>
+
+<style>
+</style>
+```
+
+##### setup 的参数
+
+> 形式: `setup(props, context) / setup(props, {attrs, slots, emit})`
+
+其中的参数:
+
+* props: 包含子组件中 props 配置声明且传入了的所有属性的对象
+* attrs: 包含父组件中传入的, 但未在 props 配置中声明的属性, 相当于 this.$attrs
+* emit: 用来分发自定义事件的函数( 实现子父组件的通信  ), 相当于 this.$emit
+* slots: 包含所有传入的插槽内容的对象, 相当于 this.$slots
+
+具体代码
+
+`App.vue`
+
+```vue
+<template>
+  <h3>App 父级组件</h3>
+  <div>msg: {{msg}}</div>
+  <hr>
+  <child :message='msg' other='其他的属性' @process="processTap"></child>
+</template>
+
+<script lang="ts">
+import { defineComponent, ref } from "vue";
+// 引入子级组件
+import Child from './components/Child.vue'
+export default defineComponent({
+  name: "App",
+  components: {
+    Child
+  },
+  setup() {
+    const msg = ref('what are you doing?');
+    // 定义事件回调
+    const processTap = (txt: string) => {
+      console.log('执行 processTap 方法');
+      // 在子组件分发(emit)时, 传递过来的参数
+      console.log(txt);
+    }
+    return {
+      msg,
+      processTap
+    }
+  }
+
+});
+</script>
+
+<style>
+</style>
+```
+
+`/components/Child.vue`
+
+```vue
+<template>
+  <h3>Child 子级组件</h3>
+  <div>子级组件message: {{ message }}</div>
+  <button @click="emitTap">分发事件</button>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
+  name: "Child",
+  props: ["message"],
+  setup(props, { attrs, emit }) {
+    function emitTap() {
+      /* 
+        包含 props 配置声明且传入的属性的一个Proxy对象
+      */
+      console.log(props); // Proxy {message: 'what are you doing?'}
+
+      /* 
+        包含父组件中传入的, 但未在 props 配置中声明的属性
+      */
+      console.log(attrs); // Proxy {other: '其他的属性', __vInternal: 1}
+      // 点击按钮的回调函数
+      // 实现子父组件的通信
+      emit("process", "传递的参数");
+    }
+    return {
+      emitTap,
+    };
+  },
+});
+</script>
+
+<style>
+</style>
+```
+
+#### ref
+
+作用: 定义一个数据的响应式
+
+使用: `const count = ref(10);`定义了一个初始值为 10, 返回值为 Ref 对象(该对象携带 value 属性), 并赋值给 count
+
+> 实现一个需求: 通过点击页面上的按钮, 使数据发生变化
+
+vue2中: 
+
+```vue
+<template>
+  <div>{{count}}</div>
+  <button @click="updateCount">增大</button>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+
+export default defineComponent({
+  name: "App",
+  data() {
+    return {
+      // 设置变量
+      count: 0
+    }
+  }, 
+  methods: {
+    // 通过点击事件改变data中的变量
+    updateCount() {
+      this.count++;
+    }
+  }
+});
+</script>
+
+<style>
+</style>
+```
+
+vue3中: 
+
+通过使用`ref`, 让数据变成响应式
+
+文档: https://v3.cn.vuejs.org/guide/composition-api-introduction.html#%E5%B8%A6-ref-%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8F%98%E9%87%8F
+
+```vue
+<template>
+  <div>{{count}}</div>
+  <button @click="updateCount">增大</button>
+</template>
+
+<script lang="ts">
+// 添加 ref 的引用
+import { defineComponent, ref } from "vue";
+export default defineComponent({
+  name: "App",
+  setup() {
+    // 定义变量, 用 ref 接收初始值, 并返回一个带有 value 属性的对象
+    // count 的类型是 Ref 类型
+    let count = ref(0);
+    // 定义方法
+    function updateCount() {
+      count.value++;
+    }
+    // 返回对象
+    return {
+      count, 
+      updateCount
+    }
+  }
+
+});
+</script>
+
+<style>
+</style>
+```
+
+在`setup()`方法中打印`count`, 会打印出一个带有`value`的对象
+
+```js
+RefImpl {__v_isShallow: false, dep: undefined, __v_isRef: true, _rawValue: 0, _value: 0}
+```
+
+<mark>`ref`一般用来定义一个基本类型的响应式数据</mark>
+
+#### reactive
+
+作用: 定义多个数据的响应式
+
+使用: `const proxy = reactive(obj):` 接收一个普通对象然后返回该普通对象的响应式代理器对象
+
+> 实现一个需求: 显示用户的相关信息, 点击按钮, 可以更新用户的相关信息数据
+
+```vue
+<template>
+  <div>reactive的使用</div>
+  <h3>名字:{{ user.name }}</h3>
+  <h3>年龄:{{ user.age }}</h3>
+  <h3>性别:{{ user.gender }}</h3>
+  <h3>媳妇:{{ user.wife }}</h3>
+  <button @click="updateUser">更新数据</button>
+</template>
+
+<script lang="ts">
+// 添加 ref 的引用
+import { defineComponent, reactive } from "vue";
+export default defineComponent({
+  name: "App",
+  setup() {
+    // 把复杂数据变成响应式数据
+    /* 
+      返回的是一个 Proxy 代理对象(user), 被代理的目标对象就是参数传入的对象(obj)
+    */
+    let obj = {
+      name: "小明",
+      age: 20,
+      wife: {
+        name: "小甜甜",
+        age: 18,
+        cars: ["奔驰", "奥迪", "宝马"],
+      },
+    };
+    const user = reactive(obj);
+    console.log(user);
+
+    const updateUser = () => {
+      // 直接使用目标对象(obj)的方式来更新数据, 不会起效果, 
+      // 只能使用代理对象(user)的方式来更新数据(响应式数据)
+      user.name = "小刚炮";
+      user.age += 2;
+      user.wife.name = "大甜甜";
+      user.wife.cars[0] = "玛莎拉蒂";
+
+      /* 
+        这里进行添加和删除属性的操作时, 要给reactive方法设置any泛型
+        const user = reactive<any>(obj);
+      */
+      // user.gender = '男';  
+      // delete user.age;
+    };
+
+    return {
+      user,
+      updateUser,
+    };
+  },
+});
+</script>
+
+<style>
+</style>
+```
+
+#### reactive 和 ref 细节问题
+
+* <mark>`ref`中也可以传递对象或者数组; 注意在更新数据时要带上`.value`</mark>; 因为如果用 ref 处理对象或数组, 内部会自动将对象或数组转换为 reactive 的代理对象
+
+> 对比 reactive 和 ref 内部实现
+
+- ref 内部: 通过给 value 属性添加 `getter/setter` 来实现对数据的劫持
+- reactive 内部: 通过使用 Proxy 来实现对对象内部所有数据的劫持, 并通过 Reflect 操作对象内部数据
+
+代码实现:
+
+```vue
+<template>
+  <h3>reactive 和 ref 的细节问题</h3>
+  <hr>
+  <h3>m1: {{ m1 }}</h3>
+  <h3>m2: {{ m2 }}</h3>
+  <h3>m3: {{ m3 }}</h3>
+  <hr>
+  <button @click="updateData">更新数据</button>
+</template>
+
+<script lang="ts">
+import { defineComponent, reactive, ref } from "vue";
+export default defineComponent({
+  name: "App",
+  components: {},
+  setup() {
+    // 通过 ref 方式设置数据
+    const m1 = ref(10);
+    const m2 = reactive({
+      name: "leo",
+      wife: {
+        name: "小红",
+        age: 20,
+      },
+    });
+    /* 
+      在 ref 中如果也传入 对象/数组, 内部会自动将其转为 reactive 的代理对象
+    */
+    const m3 = ref({
+      name: "leo",
+      wife: {
+        name: "小红",
+        age: 20,
+      },
+    });
+    // 设置更新函数
+    function updateData() {
+      // 更新 m1 中的基本数据
+      m1.value += 10;
+      // 更新 m2 中的数据
+      m2.name = '马化腾';
+      m2.wife.name = '村村小花';
+
+      // 会自动将其转为 reactive 的代理对象, 进行处理
+      console.log(m3.value);  // Proxy {name: 'leo', wife: {…}}
+      // 更新 m3 中数据
+      m3.value.name = '李彦宏';
+      m3.value.wife.name = '中华小月';
+    }
+
+    return {
+      m1,
+      m2,
+      m3,
+      updateData
+    };
+  },
+});
+</script>
+
+<style>
+</style>
+```
+
+#### <mark>比较Vue2和Vue3的响应式(重要)</mark>
+
+##### Vue2响应式
+
+> 核心
+
+通过defineProperty对对象的已有属性值的读取和修改进行劫持(监视/拦截)
+
+```js
+Object.defineProperty(data, 'count', {
+    get () {}, 
+    set () {}
+})
+```
+
+> 问题
+
+1. 对象直接新添加的属性或删除已有属性, 界面不会自动更新
+2. 对于数组, 直接通过下标替换元素或更新length, 界面不会自动更新 `arr[1] = {}`
+
+##### Vue3响应式
+
+> 核心
+
+1. 通过 Proxy (代理): 拦截对`target`的任意属性的(13种)操作, 包括属性值的读写, 属性的添加, 属性的删除等...
+2. 通过 Reflect (反射): 动态对被代理对象的相应属性进行特定的操作
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 目标对象
+        const user = {
+            name: 'leo',
+            age: 21,
+            wife: {
+                name: 'tina',
+                age: 19
+            }
+        };
+
+        /* 
+            参数一: target, 目标对象
+            参数二: handler, 处理器对象, 用来监视数据与数据的操作
+        */
+        const proxyUser = new Proxy(user, {
+            // 获取目标对象的某个属性
+            get(target, prop) {
+                console.log('get方法被调用了');
+                // 这里需要返回反射对象
+                return Reflect.get(target, prop);
+            },
+            // 修改目标对象的属性值 或 为目标对象添加新属性
+            set(target, prop, val) {
+                console.log('set方法调用了');
+                return Reflect.set(target, prop, val);
+            },
+            // 删除目标对象的某个属性
+            deleteProperty(target, prop) {
+                console.log('deleteProperty方法调用了');
+                return Reflect.deleteProperty(target, prop);
+            }
+        });
+
+        console.log(proxyUser.name);  // leo
+        // 通过代理对象修改目标对象的name属性
+        proxyUser.name = 'tom';
+        // 通过代理对象为目标对象添加的gender属性
+        proxyUser.gender = '男';
+        // 通过代理对象删除目标对象的age属性
+        delete proxyUser.age;
+        // 通过代理对象更新目标对象的某个引用属性的属性值
+        proxyUser.wife.name = '小甜甜';
+
+    </script>
+</body>
+</html>
+```
+
+#### 计算属性和监视
+
+- computed 函数:
+  - 与 computed 配置功能一致
+  - 直接设置 getter
+  - 设置 getter 和 setter
+
+- watch 函数
+
+  - 与 watch 配置功能一致
+
+  - 监视指定的**一个或多个**响应式数据, 一旦数据变化, 就自动执行监视回调
+
+  - 当我们使用 watch 监视非响应式数据, 就需要写为回调形式
+
+    ```js
+    // 回调形式
+    watch([() => user.firstName, () => user.lastName], () => {
+      console.log('----');
+    })
+    
+    // 非回调形式: 因为 user.firstName 和 user.lastName 为非响应式, 所以不起作用
+    watch([user.firstName, user.lastName], () => {
+      console.log('----');
+    })
+    ```
+
+  - 默认初始时不执行回调, 但可以通过配置 immediate 为 true, 来指定初始时立即执行第一次
+
+  - 通过配置 deep 为 true, 来指定深度监视
+
+- watchEffect 函数
+  - 不用直接指定要监视的数据, 回调函数中使用的哪些**响应式数据**就监视哪些响应式数据
+  - 默认初始时就会执行第一次, 从而可以收集需要监视的数据
+  - 监视数据发生变化时回调
+
+具体代码: 
+
+```vue
+<template>
+  <h3>计算属性和监视</h3>
+  <fieldset>
+    <legend>姓名操作</legend>
+    姓氏:
+    <input type="text" placeholder="请输入姓氏" v-model="user.firstName" />
+    <br />
+    名字:
+    <input type="text" placeholder="请输入名字" v-model="user.lastName" />
+    <br />
+  </fieldset>
+  <fieldset>
+    <legend>计算属性和监视的演示</legend>
+    姓名: <input type="text" placeholder="请输入姓名" v-model="fullName1" />
+    <br />
+    姓名: <input type="text" placeholder="请输入姓名" v-model="fullName2" />
+    <br />
+    姓名: <input type="text" placeholder="请输入姓名" v-model="fullName3" />
+    <br />
+  </fieldset>
+</template>
+
+<script lang="ts">
+import {
+  computed,
+  defineComponent,
+  reactive,
+  ref,
+  watch,
+  watchEffect,
+} from "vue";
+export default defineComponent({
+  name: "App",
+  components: {},
+  setup() {
+    // 定义一个响应式对象
+    const user = reactive({
+      firstName: "东方",
+      lastName: "不败",
+    });
+
+    /* 
+      返回的是一个 Ref 类型的对象
+        - 这里相当于只设置了 get 方法
+     */
+    const fullName1 = computed(() => {
+      return user.firstName + "-" + user.lastName;
+    });
+    // 实现 get 和 set
+    const fullName2 = computed({
+      get() {
+        return user.firstName + "-" + user.lastName;
+      },
+      set(val: string) {
+        const names = val.split("-");
+        user.firstName = names[0];
+        user.lastName = names[1];
+      },
+    });
+    /* 
+      使用监视
+      watch 的第三个参数(对象): 
+      - immediate: true 设置先执行一次
+      - deep: true 深度监视
+    */
+    const fullName3 = ref("");
+    watch(
+      user,
+      ({ firstName, lastName }) => {
+        fullName3.value = firstName + "-" + lastName;
+      },
+      { immediate: true, deep: true }
+    );
+
+    // 监视: 这个监视默认执行一次
+    // watchEffect(() => {
+    //   fullName3.value = user.firstName + '-' + user.lastName;
+    // })
+
+    watchEffect(() => {
+      const names = fullName3.value.split("-");
+      user.firstName = names[0];
+      user.lastName = names[1];
+    });
+
+    // 当我们使用 watch 监视非响应式数据(user.firstName, user.lastName)
+    // 的时候, 需要设置为回调
+    watch([() => user.firstName, () => user.lastName], () => {
+      console.log('----');
+    })
+
+    return {
+      user,
+      fullName1,
+      fullName2,
+      fullName3,
+    };
+  },
+});
+</script>
+
+<style>
+</style>
+```
+
+#### 生命周期
+
+> Vue2 生命周期
+
+具体看图: https://cn.vuejs.org/v2/guide/instance.html#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%9B%BE%E7%A4%BA
+
+> Vue3 生命周期
+
+具体看图: https://v3.cn.vuejs.org/guide/instance.html#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%9B%BE%E7%A4%BA
+
+> **与 2.x 版本生命周期相对应的组合式 API**
+
+- `beforeCreate` -> 使用 `setup()`
+- `created` -> 使用 `setup()`
+- `beforeMount` -> `onBeforeMount`
+- `mounted` -> `onMounted`
+- `beforeUpdate` -> `onBeforeUpdate`
+- `updated` -> `onUpdated`
+- `beforeDestroy` -> `onBeforeUnmount`
+- `destroyed` -> `onUnmounted`
+- `errorCaptured` -> `onErrorCaptured`
+
+> 总结: Vue3 和对应的 Vue2 生命周期比, Vue3 的先执行
+
+`App.vue`
+
+```vue
+<template>
+  <h2>App父级组件</h2>
+  <button @click="toggleShow">切换显示子组件</button>
+  <child v-if="isShow"></child>
+</template>
+
+<script lang="ts">
+import { defineComponent, ref } from "vue";
+import Child from './components/Child.vue';
+export default defineComponent({
+  name: "App",
+  components: {
+    Child
+  },
+  setup() {
+    let isShow = ref(true);
+    const toggleShow = () => {
+      isShow.value = !isShow.value;
+    }
+    return {
+      isShow,
+      toggleShow
+    };
+  },
+});
+</script>
+
+<style>
+</style>
+```
+
+`/components/Child.vue`
+
+```vue
+<template>
+<div class="about">
+  <h2>msg: {{msg}}</h2>
+  <hr>
+  <button @click="update">更新</button>
+</div>
+</template>
+
+<script lang="ts">
+import {
+  ref,
+  onMounted,
+  onUpdated,
+  onUnmounted, 
+  onBeforeMount, 
+  onBeforeUpdate,
+  onBeforeUnmount
+} from "vue"
+
+export default {
+  beforeCreate () {
+    console.log('beforeCreate')
+  },
+
+  created () {
+    console.log('created')
+  },
+
+  beforeMount () {
+    console.log('beforeMount')
+  },
+
+  mounted () {
+    console.log('mounted')
+  },
+
+  beforeUpdate () {
+    console.log('beforeUpdate')
+  },
+
+  updated () {
+    console.log('updated')
+  },
+
+  beforeUnmount () {
+    console.log('beforeUnmount')
+  },
+
+  unmounted () {
+     console.log('unmounted')
+  },
+  
+
+  setup() {
+    console.log('3.0中的 setup');
+    
+    const msg = ref('abc')
+
+    const update = () => {
+      msg.value += '--'
+    }
+
+    onBeforeMount(() => {
+      console.log('--onBeforeMount')
+    })
+
+    onMounted(() => {
+      console.log('--onMounted')
+    })
+
+    onBeforeUpdate(() => {
+      console.log('--onBeforeUpdate')
+    })
+
+    onUpdated(() => {
+      console.log('--onUpdated')
+    })
+
+    onBeforeUnmount(() => {
+      console.log('--onBeforeUnmount')
+    })
+
+    onUnmounted(() => {
+      console.log('--onUnmounted')
+    })
+    
+    return {
+      msg,
+      update
+    }
+  }
+}
+</script>
+```
+
+#### 自定义 hook 函数
+
+- 使用Vue3的组合API封装的可复用的功能函数
+- 自定义hook的作用类似于vue2中的mixin技术
+- 自定义Hook的优势: 很清楚复用功能代码的来源, 更清楚易懂
+
+> 需求1: 用户在页面中点击页面, 把点击的位置的横纵坐标收集起来并展示出来
+
+`hooks/useMousePosition.ts`
+
+```typescript
+import { onBeforeUnmount, onMounted, ref } from "vue";
+
+export default function() {
+    const x = ref(-1);
+    const y = ref(-1);
+
+    // 点击事件回调
+    const clickHandler = (event: MouseEvent) => {
+      x.value = event.pageX;
+      y.value = event.pageY;
+    }
+    onMounted(() => {
+      window.addEventListener('click', clickHandler);
+    })
+    onBeforeUnmount(() => {
+      window.removeEventListener('click', clickHandler);
+    })
+
+    return {
+        x,
+        y
+    }
+}
+```
+
+`App.vue`
+
+```vue
+<template>
+  <h2>自定义hook函数</h2>
+  <h2>x: {{x}}, y: {{y}}</h2>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+import useMousePosition from "./hooks/useMousePosition"
+export default defineComponent({
+  name: "App",
+  setup() {
+    const {x, y} = useMousePosition();
+    return {
+      x,
+      y
+    };
+  },
+});
+</script>
+
+<style>
+</style>
+```
+
+> 需求2: 封装发ajax请求的hook函数
+
+`/hooks/useRequest.ts`
+
+```typescript
+import axios from 'axios'
+import { ref } from 'vue'
+// 发送ajax的请求
+export default function<T>(url: string) {
+    const loading = ref(true)
+    const data = ref<T | null>(null)
+    const errorMsg = ref('')
+    axios.get(url)
+        .then(response => {
+            loading.value = false
+            data.value = response.data
+        })
+        .catch(e => {
+            loading.value = false
+            errorMsg.value = e.message || '未知错误'
+        })
+    return {
+        loading,
+        data,
+        errorMsg
+    }
+}
+```
+
+`App.vue`
+
+```vue
+<template>
+  <h2>自定义hook函数</h2>
+  <h3 v-if="loading">正在加载中...</h3>
+  <h3 v-else-if="errorMsg">错误信息: {{ errorMsg }}</h3>
+  <!-- <h3 v-else>
+    <li>id: {{ data.id }}</li>
+    <li>address: {{ data.address }}</li>
+    <li>distance: {{ data.distance }}</li>
+  </h3> -->
+
+  <ul v-for="p in data" :key="p.id">
+    <li>id: {{ p.id }}</li>
+    <li>title: {{ p.title }}</li>
+    <li>price: {{ p.price }}</li>
+  </ul>
+</template>
+
+<script lang="ts">
+import { defineComponent, watch } from "vue";
+import useRequest from "./hooks/useRequest";
+
+// 定义接口, 约束对象的类型
+interface Address {
+  id: string;
+  address: string;
+  distance: string;
+}
+interface Product {
+  id: string;
+  title: string;
+  price: number;
+}
+
+export default defineComponent({
+  name: "App",
+  setup() {
+    // 返回对象数据
+    // const { loading, data, errorMsg } = useRequest<Address>("/data/address.json");
+    
+    // 返回数组数据
+    const { loading, data, errorMsg } = useRequest<Product[]>("/data/product.json");
+
+    watch(data, () => {
+      if (data.value) {
+        console.log(data.value.length) // 有提示
+      }
+    })
+    
+    return {
+      loading,
+      data,
+      errorMsg,
+    };
+  },
+});
+</script>
+
+<style>
+</style>
+```
+
+
+
+
+
+
+
+
+
+
+
+### 其他部分
+
+
+
+
+
+
+
+### 手写组合API
+
+
+
+
+
+
+
+### Composition API Vs Option API
+
+
+
+
+
+
 
