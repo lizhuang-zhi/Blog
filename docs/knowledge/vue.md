@@ -336,7 +336,1015 @@ vuex 和 vue-router 的插件注册方法 install 判断如果系统存在实例
 
 6.策略模式 策略模式指对象有某个行为,但是在不同的场景中,该行为有不同的实现方案-比如选项的合并策略
 
-## **<mark>Vue源码探究系列</mark>**
+## Vue3 — ref 和 reactive、toRef、toRefs 区别
+
+* `ref`和`reactive`区别
+
+1. `reactive`只能用于为对象或者数组添加响应式状态 ( 因为`proxy`只接受引用类型 ) ,而`ref`既可用于对原始数据添加响应式, 也可用于对象和数组添加响应式 ( 因为`ref`内部会调用`reactive` ) (<mark>vue3利用proxy实现响应式，而proxy不能代理基础类型，vue3就只能给他包装成一个对象再进行代理，所以大家可以看到基础类型变成响应式读取值的时候需要.value</mark>)
+2. `ref()` 有一个 `.value` 属性可以用来重新赋值，而 `reactive()` 不可重新赋值（会丢失响应性）
+3. `ref()`要通过`.value`对数据进行操作, 而`reactive()`直接操作
+4. <mark>尤大说创建`ref`目的是为了包装一个内部值而服务, 不应该被当作一个一般响应式对象处理, 因为对于响应式对象要做的事会更多, 所以对性能的影响也会更大; 如果都为了简便的一概使用`ref`(因为`ref`内部会判断传入的参数是否是一个对象, 如果是对象, 则会再去调用`reactive`), 看起来是一劳永逸, 但是对程序的性能会有很大的问题</mark>
+
+* ref 和 toRef 区别
+
+> toRef
+
+`toRef`用于为源响应式对象上的属性新建一个`ref`,从而保持对源对象属性的响应式连接.
+
+接收两个参数: 一个是源响应式对象, 一个是属性名
+
+返回值: `ref`属性
+
+例如使用父组件传递的`props`数据时, 要引用`props`的某个属性且要保持响应式连接时就很有用.
+
+1. 获取数据值的时候需要加.value
+2. `toRef`后的`ref`数据如果是复杂类型数据时，不是原始数据的拷贝，而是引用，改变结果数据的值也会同时改变原始数据
+
+> 区别
+
+`App.vue`
+
+```vue
+<template>
+  <h2>App</h2>
+  <p>{{state}}</p>
+  <p>{{foo}}</p>
+  <p>{{foo2}}</p>
+  <button @click="update">更新</button>
+  <Child :foo="foo"/>
+</template>
+
+<script lang="ts">
+import {
+  reactive,
+  toRef,
+  ref,
+} from 'vue'
+import Child from './components/Child.vue'
+
+export default {
+  setup () {
+    const state = reactive({
+      foo: 1,
+      bar: 2
+    })
+    /* 
+      区别: 
+      - toRef 操作的属性会和 state 同步更新
+      - ref 操作的属性不会同步更新, 相当于拷贝了一份新数据, 单独操作
+    */
+    // 把响应式数据 state 中的 foo 属性 变成了 ref 对象
+    const foo = toRef(state, 'foo')  // ObjectRefImpl {_object: Proxy, _key: 'foo', _defaultValue: undefined, __v_isRef: true}
+    // 把响应式对象中的 foo 属性使用 ref 包装, 变成了一个 ref 对象
+    const foo2 = ref(state.foo)  // RefImpl {__v_isShallow: false, dep: undefined, __v_isRef: true, _rawValue: 1, _value: 1}
+    
+    const update = () => {
+      state.foo++  // foo和state中的数据同步更新
+      // foo.value++  // // foo和state中的数据同步更新
+
+      // foo2.value++  // foo和state中的数据不会更新
+    }
+    return {
+      state,
+      foo,
+      foo2,
+      update,
+    }
+  },
+  components: {
+    Child
+  }
+}
+</script>
+```
+
+`/Components/Child.vue`
+
+```vue
+<template>
+  <h2>Child</h2>
+  <h3>{{ foo }}</h3>
+  <h3>{{ length }}</h3>
+</template>
+
+<script lang="ts">
+import { computed, defineComponent, Ref, toRef } from "vue";
+
+const component = defineComponent({
+  props: {
+    foo: {
+      type: Number,
+      require: true, // 必须传
+    },
+  },
+  // props 本身就是一个响应式对象!!
+  setup(props) {
+    /* 
+      props => Proxy {foo: 1}
+      props.foo => 1
+      toRef(props, "foo") => ObjectRefImpl {_object: Proxy, _key: 'foo', _defaultValue: undefined, __v_isRef: true}
+    */
+    const length = useFeatureX(toRef(props, "foo"));
+    return {
+      length,
+    };
+  },
+});
+
+// 别人定义的 hook 函数: 参数为 Ref 类型对象
+function useFeatureX(foo: Ref) {
+  const lenth = computed(() => foo.value.toString().length);
+  return lenth;
+}
+
+export default component;
+</script>
+```
+
+* toRefs
+
+作用其实和 toRef 类似，只不过 toRef 是对一个个属性手动赋值，而 toRefs 是自动解构赋值。
+
+```js
+import { defineComponent, toRefs } from 'vue'
+
+export default defineComponent({
+  props: [title],
+  
+  setup (props) {
+    const state = reactive({
+      foo: 1,
+      bar: 2
+    })
+
+    const stateAsRefs = toRefs(state)
+    /*
+      stateAsRefs 的类型:
+      {
+        foo: Ref<number>,
+        bar: Ref<number>
+      }
+    */
+    // ref 和原始 property 已经“链接”起来了
+    state.foo++
+    console.log(stateAsRefs.foo.value) // 2
+
+    stateAsRefs.foo.value++
+    console.log(state.foo) // 3
+  }
+})
+```
+
+参考: 
+
+https://www.php.cn/vuejs/483317.html
+
+https://juejin.cn/post/7071978771808518180#heading-6
+
+https://v3.cn.vuejs.org/api/refs-api.html#toref
+
+## Vue3 — Vue3.0里为什么要用Proxy API替代defineProperty API？
+
+Object.defineProperty只能通过遍历对象属性的方式进行数据劫持，而**Proxy则直接可以劫持整个对象**，相当于我们直接操作这个对象就可以达到相应式目的；除此之外，除此之外Object.defineProperty API，只能劫持getter和setter，Proxy除getter和setter外还可以劫持`apply`、`has`等13种劫持方法
+
+## Vue3 — watch 和 watchEffect 区别
+
+1. 每次代码加载`watchEffect`都会执行。而 watch 是**惰性执行**，也就是只有监听的值发生变化的时候才会执行.
+
+   ```js
+   let activeEffect = null
+   function effect(eff) {
+     activeEffect = eff
+     // 立即执行
+     activeEffect()
+     activeEffect = null
+   }
+   ```
+
+2. `watch`显式指定依赖源(可侦听单一源或者多个源)，依赖源更新时执行回调函数; 而`watchEffect`自动收集依赖源，依赖源更新时重新执行自身
+
+   ```js
+   // 自动体现在执行 effect 回调函数时, 会触发响应式数据的 get 函数, 从而触发 track 进行依赖添加
+   ```
+
+3. `watch`允许我们访问侦听状态的先前值和当前值, 而`watchEffect`不能做到
+
+> `watch` 与 [`watchEffect`](https://v3.cn.vuejs.org/api/computed-watch-api.html#watcheffect) 在[手动停止侦听](https://v3.cn.vuejs.org/guide/reactivity-computed-watchers.html#停止侦听)、[清除副作用](https://v3.cn.vuejs.org/guide/reactivity-computed-watchers.html#清除副作用) (将 `onInvalidate` 作为第三个参数传递给回调)、[刷新时机](https://v3.cn.vuejs.org/guide/reactivity-computed-watchers.html#副作用刷新时机)和[调试](https://v3.cn.vuejs.org/guide/reactivity-computed-watchers.html#侦听器调试)方面有相同的行为。
+
+## Vue3 — 手写 shallowReactive 和 reactive
+
+```js
+/* 
+    手写shallowReactive(浅的劫持)与reactive(深的劫持)
+*/
+// 定义处理对象
+const reactiveHandler = {
+    // 拦截获取属性值
+    get(traget, prop) {
+        const result = Reflect.get(traget, prop)
+        console.log(result)
+        return result
+    },
+    // 拦截修改属性值或者添加属性值
+    set(target, prop, value) {
+        const result = Reflect.set(target, prop, value)
+        console.log(result);
+        return result
+    },
+    // 拦截删除某个属性
+    deleteProperty(traget, prop) {
+        const result = Reflect.deleteProperty(traget, prop)
+        console.log(result);
+        return result
+    }
+}
+
+// 定义一个shallowReactive函数, 传入一个目标对象
+function shallowReactive(target) {
+    if(target && typeof target === 'object') {
+        return new Proxy(target, reactiveHandler);
+    }
+    // 传入基本数据类型, 直接返回
+    return target;
+}
+
+// 定义一个reactive函数, 传入一个目标对象
+function reactive(target) {
+    if(target && typeof target === 'object') {
+        // 对数组或者对象中所有的数据进行reactive的递归处理
+        if(Array.isArray(target)) {
+            Array.forEach((item, index) => {
+                target[index] = reactive(item)
+            })
+        }else {
+            // 如果是对象
+            Object.keys(target).forEach(key => {
+                target[key] = reactive(target[key])
+            })
+        }
+        return new Proxy(target, reactiveHandler);
+    }
+    // 传入基本数据类型, 直接返回
+    return target;
+}
+
+/* 
+    验证手写内容
+*/
+const proxyUser1 = shallowReactive({
+    name: "小明",
+    car: {
+        color: 'red'
+    }
+})
+// 拦截到读和写的数据  
+proxyUser1.name += '小红'
+// 拦截到读数据, 但是没有拦截写数据
+// proxyUser1.car.color += '!!!'
+// 拦截到删除属性数据
+// delete proxyUser1.name
+// 拦截到了car属性的读, 拦截不到删除属性数据
+// delete proxyUser1.car.color
+
+const proxyUser2 = reactive({
+    name: "小明",
+    car: {
+        color: 'red'
+    }
+})
+// 拦截到读和写数据
+// proxyUser2.name += '小红'
+// 拦截到读和写数据
+// proxyUser2.car.color = '!!!'
+// 拦截到读car对象, 读color属性; 拦截到写数据
+// proxyUser2.car.color += '!!!'
+// 拦截到删除数据
+// delete proxyUser2.name
+// 拦截到读和删除数据
+// delete proxyUser2.car.color
+```
+
+## Vue3 — 手写 shallowRef 和 ref
+
+```js
+// 定义一个shallowRef函数
+function shallowRef(target) {
+    return {
+        // 把 target 数据保存起来
+        _value: target,
+        get value() {
+            console.log('劫持到读数据')
+            return this._value
+        },
+        set value(val) {
+            console.log('劫持到修改数据, 准备更新界面')
+            this._value = val
+        },
+    }
+}
+
+// 定义一个ref函数
+function ref(target) {
+  	// 和 shallowRef 的区别
+  	// 源码中会对 target 进行 isRef 的检查, 如果是 ref 类型直接返回传入值
+  	// 如果不是则会判断是否是 object, 是的话会调用 reactive()
+    target = reactive(target)
+    return {
+        // 把 target 数据保存起来
+        _value: target,
+        get value() {
+            console.log('劫持到读数据')
+            return this._value
+        },
+        set value(val) {
+            console.log('劫持到修改数据, 准备更新界面')
+            this._value = val
+        },
+    }
+}
+
+const ref1 = shallowRef({
+    name: "Leo",
+    car: {
+        color: 'blue'
+    }
+})
+// console.log(ref1.value);
+// 劫持到读数据
+// {name: 'Leo', car: {…}}
+
+// ref1.value = "new Vlaue"
+// 劫持到修改数据, 准备更新界面
+
+// 这里劫持不到修改数据, 只能劫持到读取数据
+// ref1.value.car = "new Car Vlaue"  // 劫持到读数据
+
+const ref2 = ref({
+    name: "Leo",
+    car: {
+        color: 'blue'
+    }
+})
+// console.log(ref2.value)
+// 劫持到读数据
+// {name: 'Leo', car: Proxy}
+
+// ref2.value = "ref2 new Vlaue"  
+// 劫持到修改数据, 准备更新界面
+
+// ref2.value.car = "ref2 new Car Vlaue"
+// 劫持到读数据
+// true (reactive 中的 set() 拦截)
+```
+
+## Vue3 Reactivity Course
+
+视频链接: https://www.bilibili.com/video/BV1SZ4y1x7a9?spm_id_from=333.999.0.0
+
+### Simple Try
+
+> 简单实现
+
+```js
+let price = 5
+let quantity = 2
+let total = 0
+
+// 容器: 保存对象属性的依赖函数
+let dep = new Set()
+// 操作(后的影响)
+let effect = () => { total = price * quantity }
+// 为容器添加 effect
+function track() {
+    dep.add(effect)
+}
+// 将容器中的依赖全部执行
+function trigger() {
+    dep.forEach(effect => effect())
+}
+
+track()
+// run this code for the first time
+effect()
+```
+
+调用过程
+
+```bash
+> total
+10
+> quantity = 3
+3
+> total
+10
+> trigger()
+undefined
+> total
+15
+```
+
+使用`Dep`作为存储容器, 存储下函数`effect (操作后的影响)`,通过调用`track`将`effect`添加到`Dep`容器, 当需要对数据的更新进行重新操作时, 我们会调用`trigger`去执行保存在`Dep`容器中所有依赖的`effect`, 这个过程就是实现了一个简单的发布订阅模式.
+
+> 为多个属性添加不同的 Dep 容器
+
+将刚才的`price`和`quantity`存入`product`对象中, 为每一个属性添加对应的`Dep`容器(`Set`集合), 然后将映射信息存为一个`Map`, 以属性名为`key`, 对应`Dep`容器为`value`, 如下图
+
+![](https://tva1.sinaimg.cn/large/e6c9d24ely1h2xg8k2e6kj20yy0jwgop.jpg)
+
+```js
+// 将不同属性保存在 product 对象中
+let product = {
+    price: 5,
+    quantity: 2
+}
+let total = 0
+let effect = () => {
+    total = product.price * product.quantity
+}
+
+const depsMap = new Map();
+/* 
+    为属性添加 effect 到对应的 Dep 容器中
+    @key: 对象中某个属性
+*/
+function track(key) {
+    let dep = depsMap.get(key);
+    if (!dep) {
+        depsMap.set(key, (dep = new Set()))
+    }
+    dep.add(effect)
+}
+/* 
+    执行对应属性的所有依赖 effect
+    @key: 对象中某个属性
+*/
+function trigger(key) {
+    let dep = depsMap.get(key)
+    if (dep) {
+        dep.forEach(effect => {
+            effect()
+        });
+    }
+}
+track('quantity')
+effect()
+```
+
+操作过程
+
+```bash
+> total
+10
+> product.quantity = 3
+3
+> trigger('quantity')
+undefined
+> total
+15
+```
+
+> 在此基础上, 面对更多的对象时
+
+我们需要创建一个`WeakMap`去保存, 每一个对象作为`key`, 对应的`value`是一个`Map`
+
+![](https://tva1.sinaimg.cn/large/e6c9d24ely1h2xqexuplqj210n0g1q5j.jpg)
+
+```js
+let product = {
+    price: 5,
+    quantity: 2
+}
+// 其他的对象
+let user = {
+    firstName: 'Joe',
+    lastName: 'Smith'
+}
+let total = 0
+let effect = () => {
+    total = product.price * product.quantity
+}
+// 使用 WeakMap 对象作为 key, 有效做到 GC
+const targetMap = new WeakMap()
+
+function track(target, key) {
+    let depsMap = targetMap.get(target)
+    if (!depsMap) {
+        targetMap.set(target, (depsMap = new Map()))
+    }
+    let dep = depsMap.get(key)
+    if (!dep) {
+        depsMap.set(key, (dep = new Set()))
+    }
+    dep.add(effect)
+}
+
+function trigger(target, key) {
+    let depsMap = targetMap.get(target)
+    if (!depsMap) return
+    let dep = depsMap.get(key)
+    if (dep) {
+        dep.forEach(effect => {
+            effect()
+        });
+    }
+}
+
+track(product, 'quantity')
+effect()
+```
+
+执行过程
+
+```bash
+> total
+10
+> roduct.quantity = 3
+3
+> total
+10
+> trigger(product, 'quantity')
+undefined
+> total
+15
+```
+
+### Proxy and Reflect
+
+> 三种获取对象中属性的方式
+
+```js
+let product = {
+    price: 5,
+    quantity: 2
+}
+// three notations are vaild, Reflect has a super power
+console.log(product.quantity)
+console.log(product['quantity'])
+console.log(Reflect.get(product, 'quantity'))
+```
+
+> 书写 reactive 源逻辑
+
+```js
+function reactive(target) {
+    const handler = {
+        get(target, key, receiver) {
+            return Reflect.get(target, key, receiver)
+        },
+        set(target, key, value, receiver) {
+            return Reflect.set(target, key, value, receiver)
+        }
+    }
+    return new Proxy(target, handler)
+}
+
+let proxiedProduct = reactive({
+    price: 5,
+    quantity: 2
+})
+proxiedProduct.quantity = 3
+console.log(proxiedProduct.quantity)  // 3
+```
+
+> 实现自动化
+
+```js
+const targetMap = new WeakMap()
+
+function track(target, key) {
+    let depsMap = targetMap.get(target)
+    if (!depsMap) {
+        targetMap.set(target, (depsMap = new Map()))
+    }
+    let dep = depsMap.get(key)
+    if (!dep) {
+        depsMap.set(key, (dep = new Set()))
+    }
+    dep.add(effect)
+}
+
+function trigger(target, key) {
+    let depsMap = targetMap.get(target)
+    if (!depsMap) return
+    let dep = depsMap.get(key)
+    if (dep) {
+        dep.forEach(effect => {
+            effect()
+        });
+    }
+}
+
+// 新增代码
+function reactive(target) {
+    const handler = {
+        get(target, key, receiver) {
+            let result = Reflect.get(target, key, receiver)
+            // automatically
+            track(target, key)
+            return result
+        },
+        set(target, key, value, receiver) {
+            let oldValue = target[key]
+            let result = Reflect.set(target, key, value, receiver)
+            if (oldValue != value)[
+                // automatically
+                trigger(target, key)
+            ]
+            return result
+        }
+    }
+    return new Proxy(target, handler)
+}
+
+let product = reactive({
+    price: 5,
+    quantity: 2
+})
+let total = 0
+let effect = () => {
+    total = product.price * product.quantity
+}
+effect()
+// console.log(targetMap)   // 查看添加后的 WeakMap
+```
+
+验证过程
+
+```bash
+> total
+10
+> product.price = 10
+10
+> total
+20
+```
+
+调用`effect()`时, 获取`product`对象的属性时, 由于是响应式对象, 所以会触发对应的`handler(处理程序)`中的`get`和`set`, 从而执行`track()`和`trigger()`进行依赖添加和遍历执行对应依赖中的全部`effect`
+
+![](https://tva1.sinaimg.cn/large/e6c9d24ely1h2xszf7vq1j21ov0u00xq.jpg)
+
+### activeEffect & ref
+
+如果将上一节的代码加上如下这段
+
+```js
+console.log(total);  // 10
+product.quantity = 3
+/* 
+    触发 track(product, 'quantity'), 然后去找到对应
+    targetMap、depsMap, 然后存储依赖到 dep 中, 但是
+    这是不必要的, 我们只想在 effect 中追踪(track)和
+    触发(trigger)
+*/
+console.log('Update quantity to: ' + product.quantity);  // Update quantity to: 3
+console.log(total);  // 15
+```
+
+会存在像注释里的问题, 所以要对代码进行优化
+
+```js
+const targetMap = new WeakMap()
+// 新增变量, 管理 effect 执行
+let activeEffect = null
+
+// 改动
+function track(target, key) {
+    // 添加判断 activeEffect
+    if (activeEffect) {
+        let depsMap = targetMap.get(target)
+        if (!depsMap) {
+            targetMap.set(target, (depsMap = new Map()))
+        }
+        let dep = depsMap.get(key)
+        if (!dep) {
+            depsMap.set(key, (dep = new Set()))
+        }
+        // 存在时, 才添加 activeEffect
+        dep.add(activeEffect)
+    }
+}
+
+function trigger(target, key) {
+    let depsMap = targetMap.get(target)
+    if (!depsMap) return
+    let dep = depsMap.get(key)
+    if (dep) {
+        dep.forEach(effect => {
+            effect()
+        });
+    }
+}
+
+function reactive(target) {
+    const handler = {
+        get(target, key, receiver) {
+            let result = Reflect.get(target, key, receiver)
+            // automatically
+            track(target, key)
+            return result
+        },
+        set(target, key, value, receiver) {
+            let oldValue = target[key]
+            let result = Reflect.set(target, key, value, receiver)
+            if (oldValue != value)[
+                // automatically
+                trigger(target, key)
+            ]
+            return result
+        }
+    }
+    return new Proxy(target, handler)
+}
+
+let product = reactive({
+    price: 5,
+    quantity: 2
+})
+let total = 0
+// 修改函数 effect
+function effect(eff) {
+    activeEffect = eff
+    activeEffect()
+    activeEffect = null
+}
+// 将原本的 effect 作为回调函数传入
+effect(() => {
+    total = product.price * product.quantity
+})
+```
+
+> 添加需求: 添加一个销售价格, 去计算 total
+
+```js
+const targetMap = new WeakMap()
+let activeEffect = null
+
+function track(target, key) {
+    if (activeEffect) {
+        let depsMap = targetMap.get(target)
+        if (!depsMap) {
+            targetMap.set(target, (depsMap = new Map()))
+        }
+        let dep = depsMap.get(key)
+        if (!dep) {
+            depsMap.set(key, (dep = new Set()))
+        }
+        dep.add(activeEffect)
+    }
+}
+
+function trigger(target, key) {
+    let depsMap = targetMap.get(target)
+    if (!depsMap) return
+    let dep = depsMap.get(key)
+    if (dep) {
+        dep.forEach(effect => {
+            effect()
+        });
+    }
+}
+
+function reactive(target) {
+    const handler = {
+        get(target, key, receiver) {
+            let result = Reflect.get(target, key, receiver)
+            // automatically
+            track(target, key)
+            return result
+        },
+        set(target, key, value, receiver) {
+            let oldValue = target[key]
+            let result = Reflect.set(target, key, value, receiver)
+            if (oldValue != value)[
+                // automatically
+                trigger(target, key)
+            ]
+            return result
+        }
+    }
+    return new Proxy(target, handler)
+}
+
+let product = reactive({
+    price: 5,
+    quantity: 2
+})
+let total = 0
+function effect(eff) {
+    activeEffect = eff
+    activeEffect()
+    activeEffect = null
+}
+
+/* 
+    需求: 添加一个销售价格, 去计算 total
+*/
+let salePrice = ref(0)
+// 现在的 total 是依据销售价格, 而非产品价格
+effect(() => {
+    total = salePrice.value * product.quantity
+})
+// 产品价格打九折 => 销售价格
+effect(() => {
+    salePrice.value = product.price * 0.9
+})
+
+// ref core code
+function ref(raw) {
+    // 方式一: 对于这个例子可行, 但是不是 Vue3 中写的形式
+    // return reactive({
+    //     value: raw
+    // })
+
+    // 方式二: Vue3 Core Code
+    const r = {
+        get value() {
+            track(r, 'value')
+            return raw
+        },
+        set value(newValue) {
+            if(newValue != raw) {
+                raw = newValue
+                trigger(r, 'value')
+            }
+        }
+    }
+    return r
+}
+
+console.log("total: " + total + " || salePrice.value: " + salePrice.value)  // total: 9 || salePrice.value: 4.5 
+product.quantity = 3
+console.log("total: " + total + " || salePrice.value: " + salePrice.value)  // total: 13.5 || salePrice.value: 4.5
+product.price = 10
+console.log("total: " + total + " || salePrice.value: " + salePrice.value)  // total: 27 || salePrice.value: 9
+```
+
+### Computed & Vue 3 Source
+
+> 将 total 和 salePrice 改为计算属性
+
+```js
+const targetMap = new WeakMap()
+let activeEffect = null
+
+function track(target, key) {
+    if (activeEffect) {
+        let depsMap = targetMap.get(target)
+        if (!depsMap) {
+            targetMap.set(target, (depsMap = new Map()))
+        }
+        let dep = depsMap.get(key)
+        if (!dep) {
+            depsMap.set(key, (dep = new Set()))
+        }
+        dep.add(activeEffect)
+    }
+}
+
+function trigger(target, key) {
+    let depsMap = targetMap.get(target)
+    if (!depsMap) return
+    let dep = depsMap.get(key)
+    if (dep) {
+        dep.forEach(effect => {
+            effect()
+        });
+    }
+}
+
+function reactive(target) {
+    const handler = {
+        get(target, key, receiver) {
+            let result = Reflect.get(target, key, receiver)
+            // automatically
+            track(target, key)
+            return result
+        },
+        set(target, key, value, receiver) {
+            let oldValue = target[key]
+            let result = Reflect.set(target, key, value, receiver)
+            if (oldValue != value)[
+                // automatically
+                trigger(target, key)
+            ]
+            return result
+        }
+    }
+    return new Proxy(target, handler)
+}
+
+let product = reactive({
+    price: 5,
+    quantity: 2
+})
+function effect(eff) {
+    activeEffect = eff
+    activeEffect()
+    activeEffect = null
+}
+
+function ref(raw) {
+    const r = {
+        get value() {
+            track(r, 'value')
+            return raw
+        },
+        set value(newValue) {
+            if(newValue != raw) {
+                raw = newValue
+                trigger(r, 'value')
+            }
+        }
+    }
+    return r
+}
+
+/* 
+    将 total 和 salePrice 改变为计算属性
+*/
+let salePrice = computed(() => {
+    return product.price * 0.9
+})
+let total = computed(() => {
+    return salePrice.value * product.quantity
+})
+
+// 书写 computed 
+function computed(getter) {
+    let result = ref()
+    effect(() => {
+        result.value = getter()
+    })
+    return result
+}
+
+console.log("total: " + total.value + " || salePrice.value: " + salePrice.value)  // total: 9 || salePrice.value: 4.5 
+product.quantity = 3
+console.log("total: " + total.value + " || salePrice.value: " + salePrice.value)  // total: 13.5 || salePrice.value: 4.5
+product.price = 10
+console.log("total: " + total.value + " || salePrice.value: " + salePrice.value)  // total: 27 || salePrice.value: 9
+```
+
+### Q & A
+
+#### Vue2 和 Vue3 响应式区别
+
+Vue2 响应式原理: https://www.processon.com/diagraming/625194eef346fb1da675e628
+
+Vue3 响应式原理: https://www.processon.com/diagraming/629c5a997d9c08070f990ef6
+
+核心还是发布订阅模式, 但是在 Vue2 中使用的是`forEach`去循环遍历对象属性, 通过`Object.defineProperty()`为其添加`get`和`set`, 从而实现对依赖的添加(`dep.addSub()`)和对依赖的触发执行(`dep.notify()`); 而在 Vue3 中, 是通过`Proxy`和对象访问器(`get\set`)来实现的对数据的响应式操作, 当获取数据时 (触发数据的`get`时),  执行`track`为对应的对象属性添加`effect`, 当设置数据时 (触发数据的`set`时),  执行`trigger`遍历对应属性的`Set`集合中存储的`effect`,  从而实现响应式
+
+> 为什么 Vue3 中会想到使用`targetMap、depsMap、dep` 去存储整个数据?
+
+因为 Vue2 中使用`forEach`遍历对象时, 会形成一个闭包, 为其属性存储关联的`Dep`;  但是在 Vue3 中的`Proxy`的`handler`中直接传递参数`target`和`key`, 没有形成一个闭包为每个属性存储关联依赖项.
+
+#### `ref`中两种方式的区别
+
+<img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h2ziqa9946j21ay0k8jsi.jpg" style="zoom:77%;" />
+
+尤大说创建`ref`目的是为了包装一个内部值而服务, 不应该被当作一个一般响应式对象处理, 因为对于响应式对象要做的事会更多, 所以对性能的影响也会更大, 对程序的性能会有很大的问题.
+
+所以在`ref`的源码中, 是将这两种方式进行结合, 对于基础数据类型来说, 会将其包装为一个只有`value`属性的`ref`对象返回, 而对于传入的对象, 会通过调用`reactive`进行处理
+
+源码如下:
+
+```typescript
+export function ref(value?: unknown) {
+  // 如果是 ref 类型的值, 直接返回该值
+  if (isRef(value)) {
+    return value
+  }
+  // 如果 value 是一个对象, 则调用 reactive
+  value = convert(value)
+  // 如果是基础数据类型, 并且不是 ref 类型, 则将基础类型包装为一个对象返回
+  const r = {
+    _isRef: true,
+    get value() {
+      track(r, TrackOpTypes.GET, 'value')
+      return value
+    },
+    set value(newVal) {
+      value = convert(newVal)
+      trigger(
+        r,
+        TriggerOpTypes.SET,
+        'value',
+        __DEV__ ? { newValue: newVal } : void 0
+      )
+    }
+  }
+  return r
+}
+```
+
+所以二者的区别在于面对不同的类型做不同的判断处理, 提高程序执行性能
+
+#### Vue3 中的 Proxy 和 Reflect 会带来哪些好处?
+
+对于 Vue2 来说, 无法对数组长度变化、增删元素操作、对象新增属性进行感知,  所以在 Vue 层面不得不重写数组的一些方法(push、pop、unshift、shift、splice、reverse、sort),  动态添加响应式属性,  也要使用 `$set` 方法(`Vue.set(object, property, value)`)等. 而 Proxy 则完美的从根上解决了这些问题
+
+## **<mark>Vue2源码探究系列</mark>**
 
 ### mustache模版引擎
 

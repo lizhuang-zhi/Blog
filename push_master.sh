@@ -2,7 +2,7 @@
 set -e
 
 # 进入生成的文件夹
-cd /Users/mrkleo/Program/project/FrontEnd/Web/vue-press
+cd /Users/mrkleo/Program/project/FrontEnd/Web/Vue/vue-press
 
 git add .
 git commit -m 'update master'

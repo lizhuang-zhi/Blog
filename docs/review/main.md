@@ -2976,7 +2976,7 @@ export default {
 
 ####  toRaw 与 markRaw
 
-- toRaw: 将代理对象专为普通对象(没有响应式了), 数据发生变化, 界面也不变化
+- toRaw: 将代理对象转为普通对象(没有响应式了), 数据发生变化, 界面也不变化
 
 - markRaw: 标记一个对象，使其永远不会转换为代理。返回对象本身
 
@@ -3122,6 +3122,7 @@ const component = defineComponent({
       require: true, // 必须传
     },
   },
+  // props 本身就是一个响应式对象!!
   setup(props) {
     /* 
       props => Proxy {foo: 1}
@@ -3291,7 +3292,169 @@ export default {
 
 ### 手写组合API
 
-暂时没有学习
+#### 手写 shallowReactive 与 reactive
+
+```js
+/* 
+    手写shallowReactive(浅的劫持)与reactive(深的劫持)
+*/
+// 定义处理对象
+const reactiveHandler = {
+    // 拦截获取属性值
+    get(traget, prop) {
+        const result = Reflect.get(traget, prop)
+        console.log(result)
+        return result
+    },
+    // 拦截修改属性值或者添加属性值
+    set(target, prop, value) {
+        const result = Reflect.set(target, prop, value)
+        console.log(result);
+        return result
+    },
+    // 拦截删除某个属性
+    deleteProperty(traget, prop) {
+        const result = Reflect.deleteProperty(traget, prop)
+        console.log(result);
+        return result
+    }
+}
+
+// 定义一个shallowReactive函数, 传入一个目标对象
+function shallowReactive(target) {
+    if(target && typeof target === 'object') {
+        return new Proxy(target, reactiveHandler);
+    }
+    // 传入基本数据类型, 直接返回
+    return target;
+}
+
+// 定义一个reactive函数, 传入一个目标对象
+function reactive(target) {
+    if(target && typeof target === 'object') {
+        // 对数组或者对象中所有的数据进行reactive的递归处理
+        if(Array.isArray(target)) {
+            Array.forEach((item, index) => {
+                target[index] = reactive(item)
+            })
+        }else {
+            // 如果是对象
+            Object.keys(target).forEach(key => {
+                target[key] = reactive(target[key])
+            })
+        }
+        return new Proxy(target, reactiveHandler);
+    }
+    // 传入基本数据类型, 直接返回
+    return target;
+}
+
+/* 
+    验证手写内容
+*/
+const proxyUser1 = shallowReactive({
+    name: "小明",
+    car: {
+        color: 'red'
+    }
+})
+// 拦截到读和写的数据  
+proxyUser1.name += '小红'
+// 拦截到读数据, 但是没有拦截写数据
+// proxyUser1.car.color += '!!!'
+// 拦截到删除属性数据
+// delete proxyUser1.name
+// 拦截到了car属性的读, 拦截不到删除属性数据
+// delete proxyUser1.car.color
+
+const proxyUser2 = reactive({
+    name: "小明",
+    car: {
+        color: 'red'
+    }
+})
+// 拦截到读和写数据
+// proxyUser2.name += '小红'
+// 拦截到读和写数据
+// proxyUser2.car.color = '!!!'
+// 拦截到读car对象, 读color属性; 拦截到写数据
+// proxyUser2.car.color += '!!!'
+// 拦截到删除数据
+// delete proxyUser2.name
+// 拦截到读和删除数据
+// delete proxyUser2.car.color
+```
+
+#### 手写 shallowRef 与 ref
+
+```js
+// 定义一个shallowRef函数
+function shallowRef(target) {
+    return {
+        // 把 target 数据保存起来
+        _value: target,
+        get value() {
+            console.log('劫持到读数据')
+            return this._value
+        },
+        set value(val) {
+            console.log('劫持到修改数据, 准备更新界面')
+            this._value = val
+        },
+    }
+}
+
+// 定义一个ref函数
+function ref(target) {
+  	// 和 shallowRef 的区别
+    target = reactive(target)
+    return {
+        // 把 target 数据保存起来
+        _value: target,
+        get value() {
+            console.log('劫持到读数据')
+            return this._value
+        },
+        set value(val) {
+            console.log('劫持到修改数据, 准备更新界面')
+            this._value = val
+        },
+    }
+}
+
+const ref1 = shallowRef({
+    name: "Leo",
+    car: {
+        color: 'blue'
+    }
+})
+// console.log(ref1.value);
+// 劫持到读数据
+// {name: 'Leo', car: {…}}
+
+// ref1.value = "new Vlaue"
+// 劫持到修改数据, 准备更新界面
+
+// 这里劫持不到修改数据, 只能劫持到读取数据
+// ref1.value.car = "new Car Vlaue"  // 劫持到读数据
+
+const ref2 = ref({
+    name: "Leo",
+    car: {
+        color: 'blue'
+    }
+})
+// console.log(ref2.value)
+// 劫持到读数据
+// {name: 'Leo', car: Proxy}
+
+// ref2.value = "ref2 new Vlaue"  
+// 劫持到修改数据, 准备更新界面
+
+// ref2.value.car = "ref2 new Car Vlaue"
+// 劫持到读数据
+// true (reactive 中的 set() 拦截)
+```
 
 参考: https://24kcs.github.io/vue3_study/chapter4/03_%E6%89%8B%E5%86%99%E7%BB%84%E5%90%88API.html#_1-shallowreactive-%E4%B8%8E-reactive
 

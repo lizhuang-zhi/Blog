@@ -947,6 +947,147 @@ Flex布局是2009年W3C组织提出的一种不同于传统布局的布局方式
 
 参考: [Flex 布局教程：语法篇 - 阮一峰的网络日志](http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html)
 
+## Grid 布局
+
+> 示例一
+
+Index.html
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head> 
+<body>
+    <div class="container">
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+    </div>
+</body>
+
+</html>
+```
+
+style.css
+
+```css
+.container {
+    width: 500px;
+    height: 500px;
+    background: yellowgreen;
+
+  	/* grid布局 */
+    display: grid;
+    /* 
+  		几个数代表把一行分为几份 
+  		每一份设置的数值为占比大小
+  	*/
+    grid-template-columns: 1fr 2fr 1fr;
+    /* 设置行间距 */
+    row-gap: 10px;
+    /* 设置列间距 */
+    column-gap: 20px;
+    /* 上面两个属性的简写形式 */
+    /* gap: 20px 10px; */
+
+    /* 设置子元素在每个grid格子中的垂直排列方式 */
+    align-items: center;
+    /* 设置子元素在每个grid格子中的水平排列方式 */
+    justify-items: end;
+}
+
+.container .item {
+    width: 100px;
+    height: 100px;
+    background: tomato;
+}
+```
+
+> 示例二
+
+index.html
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head> 
+
+<body>
+    <div class="layout">
+        <header>头部</header>
+        <aside>侧边栏</aside>
+        <main>内容</main>
+        <footer>底部</footer>
+    </div>
+</body>
+
+</html>
+```
+
+style.css
+
+```css
+.layout {
+    /* 这是grid布局的尺寸 */
+    width: 700px;
+    height: 700px;
+    background: pink;
+
+    display: grid;
+    /* 排列元素 */
+    grid-template-areas: 
+    "header header header"
+    "sidebar content content"
+    "footer footer footer";
+
+    /*
+        如果行和列轨道尺寸小于 grid 布局, 对整个轨道的排列
+    */
+    /* 对轨道进行在垂直方向上的排列 */
+    align-content: center;
+    /* 对轨道进行在水平方向上的排列 */
+    /* justify-content: center; */
+}
+header {
+    grid-area: header;
+    height: 100px;
+    background: greenyellow;
+}
+aside {
+    grid-area: sidebar;
+    height: 200px;
+    background: coral;
+}
+main {
+    grid-area: content;
+    height: 200px;
+    background: blueviolet;
+}
+footer {
+    grid-area: footer;
+    height: 100px;
+    background: blue;
+}
+```
+
 ## background 属性总结
 
 background 的所有属性

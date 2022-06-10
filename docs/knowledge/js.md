@@ -644,6 +644,20 @@ console.log(typeof demo); // undefined
 
 访问 Object 对象上的 foo 属性，返回 undefined ， 表示Object 上不存在或者没有定义名为 foo 的属性；对未声明的变量执行typeof操作符返回了undefined值。
 
+> 补充一下: 对于对象中定义了的属性, 但是没赋值, 默认为空字符串
+
+```js
+let obj = {
+    name,
+}
+// 定义属性, 但是未赋值, 默认为空字符串
+console.log(obj.name);  // ""
+console.log(typeof obj.name);  // string
+
+// 未定义属性
+console.log(obj.age);  // undefined
+```
+
 #### **3、函数定义了形参，但没有传递实参**
 
 ```js
