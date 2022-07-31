@@ -1148,6 +1148,20 @@ QUIC 是新协议，对于很多网络设备，根本不知道什么是 QUIC，�
 3. 无参数时，GET 报文形式和 POST 的区别只是请求行的第一个方法名不同；有参数时，GET 的参数放在 URL 中而 POST 的参数放在 body 请求体中
 4. GET 的 URL 长度被限制，是因为 GET 会被浏览器缓存，如果过长 URL 会导致浏览器存储大量数据；POST 的 body 长度也会被限制，是因为过长的 body 数据会加长服务器解析时间，影响服务器性能。 
 
+> 区分 Diff 和 Same
+
+```js
+Diff:
+  1. get 的参数一般放在url(也可以放在body中), post 放在 body 中
+  2. 报文上, get 和 post 请求行显示不同(POST /uri HTTP/1.1 \r\n 和 GET /uri HTTP/1.1 \r\n)
+  3. get 会被缓存, 而 post 不会被缓存
+  4. get 数据在 url 中可见, post 的数据不会显示在 url 中
+  5. get 的数据长度受浏览器限制, post 的数据长度受服务器限制
+  6. get 是幂等的, post 是非幂等的
+Same:
+	1. get 和 post 都是明文传输数据(因为都是http方法), 所以都不安全
+```
+
 ## 在网站中输入url，都经历了什么过程
 
 具体参看“前端性能与优化”中的内容。

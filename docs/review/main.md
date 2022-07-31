@@ -657,8 +657,8 @@ console.log(info);  // tom is 21 years old
 ```typescript
 let n: null = null;
 let u: undefined = undefined;
-n = {};   // Error
-u = 123;  // Error
+n = {};   // Error: 不能将类型"{}"分配给"null"
+u = 123;  // Error: 不能将类型"123"分配给"undefined"
 ```
 
 #### 数组
@@ -716,8 +716,11 @@ enum Color {
 // 枚举类型默认从 0 开始编号
 let myColor: Color = Color.Green;  
 console.log(myColor);  // 1
+
+console.log(Color);   // { '0': 'Red', '1': 'Green', '2': 'Blue', Red: 0, Green: 1, Blue: 2 }
 console.log(Color[0]);  // Red 
 console.log(Color[1]);  // Green
+console.log(Color['Blue']);  // 2
 ```
 
 默认从 0 开始编号, 也可以手动对其进行编号
@@ -780,9 +783,9 @@ uk = "great job";
 uk = true;
 ```
 
-#### unknown 和 any 的区别
+#### <mark>unknown 和 any 的区别</mark>
 
-`unknown`类型不可以赋值给其他变量, 而 `any`类型可以
+`unknown`类型不可以赋值给其他变量, 而`any`类型可以
 
 ```typescript
 let str: string;
@@ -813,7 +816,7 @@ let result = foo();
 console.log(result);  // undefined
 ```
 
-可以给变量声明`void`类型, 但是意义不大, 以为只能给其赋值`undefined`
+可以给变量声明`void`类型, 但是意义不大, 因为只能给其赋值`undefined`
 
 ```typescript
 let unusable: void = undefined
@@ -857,7 +860,7 @@ function fn_2(): never{
 
 #### object
 
-设置`object`类型的变量, 可以使用引用类型赋值
+设置`object`类型的变量, 可以使用引用类型赋值(<mark>和JS比, 多了个元组</mark>)
 
 ```typescript
 let obj: object = {};
@@ -969,6 +972,8 @@ let person: IPerson = {
 }
 ```
 
+<mark>定义的接口类型的对象属性不能多也不能少,  要和定义的接口一致</mark>
+
 ##### 可选属性
 
 通过`?`将属性设置为可选
@@ -1039,8 +1044,8 @@ console.log(judgeNum(11, 20));  // false
 
 类类型: 实现接口
 
-1. 一个类可以实现多个接口
-2. 一个接口可以继承多个接口
+1. ==一个类可以实现多个接口==
+2. ==一个接口可以继承多个接口==
 
 ```typescript
 interface Alarm {
@@ -1456,7 +1461,7 @@ foo(11, 22, 33, 44);   // [22, 33, 44]
 在 JS 中, 实参和形参可以不匹配. 所以在 JS 中没有重载的概念. 而对于 TS 这种强类型语言来说是存在的
 
 ```typescript
-// 重载函数声明
+// 重载函数声明, Need state first!!!
 function add(x: string, y: string): string
 function add(x: number, y: number): number
 
@@ -1618,7 +1623,7 @@ interface Lengthwise {
   length: number;
 }
 
-// 指定泛型约束
+// 指定泛型约束!!!
 function fn2 <T extends Lengthwise>(x: T): void {
   console.log(x.length)
 }
@@ -3489,6 +3494,45 @@ const ref2 = ref({
 ![](https://tva1.sinaimg.cn/large/e6c9d24ely1h20uy0n8nuj20u00u1jsx.jpg)
 
 参考: https://24kcs.github.io/vue3_study/chapter4/04_Composition%20VS%20Option.html
+
+# ES8
+
+## `String.padStart()`和`String.padEnd()`
+
+Noted: 将字符串用指定字符串填充到指定长度 (可从字符串前面或者尾部)
+
+```js
+// if you don't pass the second parameter, a space string(it's " ", not "") passed in by default
+let product_cost = "2089".padStart(6);  
+console.log(product_cost);   //   2089(there are two blank space in front)
+console.log(product_cost.length);  // 6
+console.log(product_cost === "  2089");  // true
+
+/*
+    test second paramter type:
+    1. number     87 => "87"
+    2. string     "GTR" => "GTR"
+    3. boolean    true => "true"
+    4. null       null => "null"
+    5. undefined  undefined => same effect with don't pass the second paramter
+*/
+let product_str = "bar".padStart(8, true);
+console.log(product_str);   // truetbar
+console.log(product_str.length);  // 8
+
+// return origin string when you pass the small number than itself
+let product_small = "great".padStart(3, true);
+console.log(product_small);   // great
+console.log(product_small.length);  // 5
+
+/*
+    And a similar method: String.padEnd()
+    just pad in end
+*/
+let product_end = "nice".padEnd(9, "123")
+console.log(product_end);   // nice12312
+console.log(product_end.length);  // 12
+```
 
 
 

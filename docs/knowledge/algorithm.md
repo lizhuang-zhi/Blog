@@ -98,6 +98,7 @@ function bar(array) {
             }
         }
         // 交换一次即可
+      	// 这里还可以再加个if判断, 当 minValIndex != i 才进行 swap
         let tmp = array[i];
         array[i] = array[minValIndex];
         array[minValIndex] = tmp;

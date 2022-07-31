@@ -538,7 +538,7 @@ border-box将盒子设置为替代盒子模型，而content-box将盒子设置�
 
 首先`relative`是相对于元素自身的`static`状态进行位置偏移的, 通过设置`top、left、right、bottom`来对其设置偏移
 
-注意: `relative`没有脱离文档流, 所以即使发生偏移, 也会保留其原来的元素位置
+注意: **`relative`没有脱离文档流, 所以即使发生偏移, 也会保留其原来的元素位置**
 
 ![](https://tva1.sinaimg.cn/large/e6c9d24ely1h1e4fd2oj3j21c00u0dkl.jpg)
 
@@ -1487,3 +1487,132 @@ body {
 ```
 
 查看代码效果: https://code.juejin.cn/pen/7089256142051737637
+
+## 对于 css variable，它解决了哪些问题
+
+1. CSS variable 减少样式重复定义, 方便维护, 提高可读性
+
+   ```css
+   :root {
+     	/* 定义变量, 方便重复调用 */
+       --bgcolor: blue;
+       --color: red;
+   }
+   
+   p {
+       color: var(--color);
+   }
+   
+   div {
+       background-color: var(--bgcolor);
+       color: var(--color)
+   }
+   ```
+
+2. 在媒体查询中, 可精简代码, 减少冗余
+
+   ```css
+   .box {
+     	/* 定义变量(不一定在 :root 中定义) */
+       --base-size: 10;
+       width: calc(var(--base-size) * 10px);
+       height: calc(var(--base-size) * 5px);
+       padding: calc(var(--base-size) * 1px);
+   }
+   
+   @media screen and (min-width: 600px) {
+       .box {
+         	/* 
+         		当媒体查询响应时, 可通过改变变量来修改样式
+        		*/
+           --base-size: 22;
+       }
+   }
+   ```
+
+3. 方便在 JS 中控制 DOM 的样式更改
+
+   ```js
+   // 获取 DOM style
+   let boxStyle = document.getElementById("box").style
+   // 设置变量
+   boxStyle.setProperty('--bgcolor', 'pink')
+   // 读取变量
+   console.log(boxStyle.getPropertyValue("--bgcolor"));  // pink
+   // 删除变量
+   boxStyle.removeProperty('--bgcolor')
+   ```
+
+## 如何画一个三角形
+
+> First Method
+
+```css
+.triangle {
+    width: 0px;
+    height: 0px;
+    /* 
+        border 是以下三个属性的简写
+        border: border-width border-style border-color;
+    */
+    border: 100px solid;
+    border-color: transparent transparent orange transparent;
+}
+```
+
+> Second Method
+
+```css
+.triangle {
+    margin: 0 auto;
+    width: 50vh;
+    height: 50vh;
+    background-color: aqua;
+
+    /* 
+        画多边形： 
+        polygon(x y, x y, ...): 一组 x y, 代表一个点
+        - 起始位置在左上角(0,0)
+            x: 往右增加
+            y: 往下增加
+    */
+    clip-path: polygon(0 0, 0% 100%, 100% 100%);
+
+    /* 这样也是一个三角形 */
+    /* clip-path: polygon(0 0, 0% 100%, 50% 500%); */
+}
+```
+
+## border 样式
+
+首先对于`border`来说
+
+```css
+.border-style {
+    width: 100px;
+    height: 100px;
+    /* 
+        border 是以下三个属性的简写
+        border: border-width border-style border-color;
+    */
+    border: 20px orange dashed;
+}
+```
+
+对于其中的`border-style`
+
+```css
+.border-style {
+    width: 100px;
+    height: 100px;
+    border: 20px orange;
+    /* 
+        border-style: 上右下左依次定义的形式
+    */
+    border-style: solid dashed outset groove;
+}
+```
+
+浏览器效果:
+
+<img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h4q2usrgy4j20a3096aa4.jpg" style="zoom:150%;" />

@@ -246,6 +246,44 @@ function createKeyToOldIdx (children, beginIdx, endIdx) {
 }
 ```
 
+## Vue2中, `v-for`使用对象时, 传入的三个参数
+
+> 一个参数时
+
+```html
+<ul id="v-for-object" class="demo">
+  <li v-for="value in myObject">
+    {{ value }}
+  </li>
+</ul>
+```
+
+`in`前一个参数时, 表示的是每次遍历属性的==属性值`value`==
+
+> 两个参数时
+
+```html
+<ul id="v-for-object" class="demo">
+  <li v-for="(value, key) in myObject">
+    {{ key }}: {{ value }}
+  </li>
+</ul>
+```
+
+`in`前两个参数时, 表示的是每次遍历属性的==属性值`value`==和==属性名`key`==
+
+> 三个参数时
+
+```html
+<li v-for="(value, key, index) in myObject">
+  {{ index }}. {{ key }}: {{ value }}
+</li>
+```
+
+`in`前三个参数时, 表示的是每次遍历属性的==属性值`value`==和==属性名`key`==和==索引`index`==
+
+参考官网教程: https://v3.cn.vuejs.org/guide/list.html#%E5%9C%A8-v-for-%E9%87%8C%E4%BD%BF%E7%94%A8%E5%AF%B9%E8%B1%A1
+
 ## 为什么不建议用index做key?
 
 同上一个问题, 也是因为在进行虚拟节点的对比时, 如果是用index作为key, 那么新增的那个在头顶的元素的 key 为0, 这样进行 diff 四命中比较的时候, 会由于前三次都是新前与旧前命中, 最后将新节点中剩余的节点(该节点本来就在原来旧的节点的最后一个)添加到旧节点中,导致原来不用更新的节点也被更新, 降低效率.
