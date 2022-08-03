@@ -1616,3 +1616,80 @@ body {
 浏览器效果:
 
 <img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h4q2usrgy4j20a3096aa4.jpg" style="zoom:150%;" />
+
+## HTML - button 标签和 input 标签
+
+### 按钮
+
+对于按钮元素，可以使用两个 HTML 标记之一：`input`和`button`.
+
+```html
+<button>Click here</button>
+
+<!-- 如果使用input标签，则type必须指定属性才能使其显示为按钮 -->
+<input type="button" value="Click here" />
+```
+
+两者`button`都有`input`一些共同的属性：
+
+1. disabled
+2. autofocus
+3. tabindex
+
+### button tag 和 input tag 区别
+
+虽然`button`和`input`（当显示为按钮时）本质上做同样的事情，但存在一些差异
+
+1. [`input`标签不能有伪元素](https://www.scottohara.me/blog/2014/06/24/pseudo-element-input.html)，而按钮可以；
+2. 该`input`标签具有一些用于附加功能的独特属性：
+   1. [`accesskey`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey)允许用户使用键盘上的键或键组合触发按钮的属性；
+3. `input`标签可以附加`label`标签。
+
+### 按钮类型
+
+要设置按钮类型，请使用相应的属性：
+
+- `button`- 一个常规按钮，除非指定，否则不做任何事情（例如 JavaScript 事件）
+- `submit`- 向服务器提交表单数据
+- `reset`- 重置字段中的值
+
+```html
+<button type="button">Apply now</button>
+
+<button type="submit">Submit</button>
+
+<button type="reset">Reset</button>
+```
+
+or
+
+```html
+<input type="button" value="Apply now" />
+
+<input type="submit" value="Submit" />
+
+<input type="reset" value="Reset" />
+```
+
+### 按钮行为
+
+该`type`属性定义表单内的按钮行为。视觉上不同的按钮类型看起来相同并且没有太多差异。
+
+在表单内部，一旦单击按钮，默认情况下将执行`type`属性指定的操作。如果按钮在表单内并且没有指定属性，它将充当`submit`类型按钮。如果按钮在表单内并且它有一个`button`属性，它不会触发任何动作，除非由 JavaScript 指定。
+
+在表单之外，每个按钮类型都充当常规按钮，这意味着单击时不会发生任何事情。
+
+you can try this code in your bower
+
+```html
+<form action="">
+  <input type="text" placeholder="Your name" required>
+  <input type="email" placeholder="email@example.com" required>
+  <input type="number" value="42">
+
+  <input type="submit" value="Submit" />
+  <input type="reset" value="Reset" />
+  <button type="button">Button</button>
+</form>
+```
+
