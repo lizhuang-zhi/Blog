@@ -97,6 +97,8 @@ static | relative | absolute | sticky | fixed
 4. <button type="reset"></button>
 ```
 
+更多关于 input tag 和 button tag 的不同 type 可参看: https://lizhuang-zhi.github.io/blog/knowledge/css.html#html-button-%E6%A0%87%E7%AD%BE%E5%92%8C-input-%E6%A0%87%E7%AD%BE
+
 ## `<input>` 标签默认的 type 属性值为
 
 `text`
