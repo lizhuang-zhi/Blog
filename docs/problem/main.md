@@ -60,6 +60,12 @@ export default {
 
 ```html
 Avoid mutating a prop directly since the value will be overwritten whenever the parent component re-renders. Instead, use a data or computed property based on the prop's value. Prop being mutated: "show"
+
+<div>
+  <div>
+    123
+  </div>
+</div>
 ```
 
 > 明确问题 & 造成原因
@@ -136,4 +142,6 @@ export default {
 </script>
 ```
 
-**这样便实现了父子组件间数据的双向绑定**, 解决该问题
+> 问题本质
+
+**这样便实现了父子组件间数据的双向绑定**, 解决该问题, 所以*该问题的本质, 其实就是如何在**Vue2**中实现子父组件间数据的双向绑定 ! !*

@@ -1,1 +1,0 @@
-const e={key:"v-772846fe",path:"/books/",title:"\u4E66\u7C4D\u5206\u4EAB",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:165052565e4,contributors:[{name:"mrkleo",email:"2315831906@qq.com",commits:2}]},filePathRelative:"books/README.md"};export{e as data};
