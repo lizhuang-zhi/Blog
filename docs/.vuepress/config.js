@@ -63,7 +63,7 @@ module.exports = {
             {
                 text: '公司项目问题review',
                 link: '/problem/',
-            },
+            }, 
         ],
         repo: 'https://github.com/lizhuang-zhi',
         sidebar: {
