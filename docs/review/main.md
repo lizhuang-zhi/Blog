@@ -3495,6 +3495,60 @@ const ref2 = ref({
 
 参考: https://24kcs.github.io/vue3_study/chapter4/04_Composition%20VS%20Option.html
 
+# ES7
+
+## Array.prototype.includes()
+
+> Simple to use
+
+```js
+let arr = [1, 5, 22, -10, 6, 0]
+console.log(arr.includes(0));  // true
+console.log(arr.includes(5));  // true
+console.log(arr.includes(-10));  // true
+console.log(arr.includes(-8));  // false
+```
+
+> Diff with `Array.prototype.indexof()`
+
+1. 当我们在进行 if 判断时更加方便
+
+```js
+var ary = [1];
+if (ary.indexOf(1) !== -1) {
+    console.log("数组存在1")
+}
+if (ary.includes(1)) {
+    console.log("数组存在1")
+}
+```
+
+2. 对于 NaN 的判断不同
+
+```js
+let arr = [NaN]
+console.log(arr.indexOf(NaN));  // -1
+console.log(arr.includes(NaN));  // true
+```
+
+`indexof`无法判断数组中是否存在 `NaN`, 而`includes`可以
+
+3. 当数组有空值的时候, 判断不同
+
+```js
+let arr = new Array(2)
+console.log(arr);    // [empty × 2]
+console.log(arr[0]);  // undefined
+console.log(arr[1]);  // undefined
+
+console.log(arr.indexOf(undefined));  // -1
+console.log(arr.includes(undefined));  // true
+```
+
+`indexof`不会认为 empty 的数组中为 undefined , 而`includes`会
+
+
+
 # ES8
 
 ## `String.padStart()`和`String.padEnd()`
@@ -3533,6 +3587,584 @@ let product_end = "nice".padEnd(9, "123")
 console.log(product_end);   // nice12312
 console.log(product_end.length);  // 12
 ```
+
+# Golang
+
+教程链接: https://www.youtube.com/watch?v=yyUHQIec83I
+
+## 入门描述
+
+> why go ?
+
+Existing Programming Languages did not fully take advantage of infrastructure, so we use "Go" to fully take it
+
+We can use "Go" to doing multiple tasks at once, Maximize  the performance of infrastructure
+
+> 特点
+
+Attempt to combine both:
+
+1. Simple and readable syntax ( like Python )
+2. Efficiency and safety ( like C++ )
+
+> 安装
+
+1. google install go, and download the file with package, and step to step click next
+2. Vscode add a extension for "Go - Go Team at Google"
+3. now to build a file like xxx.go
+
+## 语法
+
+### start
+
+1. "go mod init booking-app" order to create "go.mod"
+
+   ```tex
+   module booking-app
+   
+   go 1.19
+   ```
+
+2. create "main.go" file
+
+   ```go
+   // must declare package, any code must in package
+   package main
+   
+   // import package from Golang
+   import "fmt"
+   
+   // entry point
+   func main()  {
+   	fmt.Println("Welcome to our conference booking application")
+   	fmt.Println("Get your tickets here to attend")
+   }
+   ```
+
+3. input the order to run this "main.go" file in terminal
+
+   ```bash
+   go run main.go
+   ```
+
+### 类型声明
+
+```go
+package main
+
+import "fmt"
+
+func main()  {
+	// Syntactic Suger
+	// conferenceName := "Go Conference"
+	var conferenceName string = "Go Conference"
+	// declare const
+	const conferenceTickets int = 50
+	// we don't hope this value to be a negative, so use "uint" type
+	var remainingTickets uint = 50
+
+	// print the variable type with "%T"
+	fmt.Printf("conferenceName is %T, conferenceTickets is %T, remainingTickets is %T\n", conferenceName, conferenceTickets, remainingTickets)
+	fmt.Printf("Welcome to %v booking application\n", conferenceName)
+	fmt.Printf("We have total of %v tickets and %v are still available.\n", conferenceTickets, remainingTickets)
+	fmt.Println("Get your tickets here to attend")  
+
+	// specify a type when you not give inital value in same line
+	var userName string
+	var userTickets int
+
+	userName = "Tom"
+	userTickets = 2
+
+	fmt.Printf("User %v booked %v tickets\n", userName, userTickets)
+}
+// conferenceName is string, conferenceTickets is int, remainingTickets is uint
+// Welcome to Go Conference booking application
+// We have total of 50 tickets and 50 are still available.
+// Get your tickets here to attend
+// User Tom booked 2 tickets
+```
+
+### Pointer
+
+> What is a Pointer ?
+
+```go
+var tickets = 50
+```
+
+![](https://tva1.sinaimg.cn/large/e6c9d24egy1h5axlze2ckj21fu0ken04.jpg)
+
+> Keep going the ticket application for code
+
+```go
+package main
+
+import "fmt"
+
+func main()  {
+	var conferenceName string = "Go Conference"
+	const conferenceTickets int = 50
+	var remainingTickets uint = 50
+
+	fmt.Printf("Welcome to %v booking application\n", conferenceName)
+	fmt.Printf("We have total of %v tickets and %v are still available.\n", conferenceTickets, remainingTickets)
+	fmt.Println("Get your tickets here to attend")  
+
+	var firstName string
+	var lastName string
+	var email string
+	var userTickets uint
+
+	fmt.Println("Enter your first name:")
+	fmt.Scan(&firstName)
+
+	fmt.Println("Enter your last name:")
+	fmt.Scan(&lastName)
+
+	fmt.Println("Enter your email:")
+	fmt.Scan(&email)
+
+	fmt.Println("Enter number of tickets:")
+	fmt.Scan(&userTickets)
+
+	remainingTickets -= userTickets
+
+	fmt.Printf("Tank you %v %v for booking %v tickets. You will receive a email at %v\n", firstName, lastName, userTickets, email)
+	fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
+}
+```
+
+Running result:
+
+![](https://tva1.sinaimg.cn/large/e6c9d24egy1h5azqn47dxj20yw0c0wge.jpg)
+
+### Arrays & Slices
+
+==Array in Go==
+
+```go
+package main
+
+import "fmt"
+
+func main()  {
+	var conferenceName string = "Go Conference"
+	const conferenceTickets int = 50
+	var remainingTickets uint = 50
+	// declare a array type of varible
+	var bookings [50]string
+
+	fmt.Printf("Welcome to %v booking application\n", conferenceName)
+	fmt.Printf("We have total of %v tickets and %v are still available.\n", conferenceTickets, remainingTickets)
+	fmt.Println("Get your tickets here to attend")  
+
+	var firstName string
+	var lastName string
+	var email string
+	var userTickets uint
+
+	fmt.Println("Enter your first name:")
+	fmt.Scan(&firstName)
+
+	fmt.Println("Enter your last name:")
+	fmt.Scan(&lastName)
+
+	fmt.Println("Enter your email:")
+	fmt.Scan(&email)
+
+	fmt.Println("Enter number of tickets:")
+	fmt.Scan(&userTickets)
+
+	remainingTickets -= userTickets
+	// add the element to array
+	bookings[0] =  firstName + " " + lastName
+	
+	fmt.Printf("The whole array: %v\n", bookings)
+	fmt.Printf("The first element in array: %v\n", bookings[0])
+	fmt.Printf("Array type: %T\n", bookings)
+	fmt.Printf("Array Size: %v\n", len(bookings)) 
+
+	fmt.Printf("Tank you %v %v for booking %v tickets. You will receive a email at %v\n", firstName, lastName, userTickets, email)
+	fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
+}
+// Welcome to Go Conference booking application
+// We have total of 50 tickets and 50 are still available.
+// Get your tickets here to attend
+// Enter your first name:
+// Leo
+// Enter your last name:
+// Li
+// Enter your email:
+// 2315831906@qq.com
+// Enter number of tickets:
+// 12
+
+// The whole array: [Leo Li                                                 ]
+// The first element in array: Leo Li
+// Array type: [50]string
+// Array Size: 50
+
+// Tank you Leo Li for booking 12 tickets. You will receive a email at 2315831906@qq.com
+// 38 tickets remaining for Go Conference
+```
+
+>Problem:  What if we don't know the size when creating it? A list that is more **dynamic in size**?
+
+==Slice in Go==
+
+1. Slice is an **abstraction of an Array**
+2. Slices are more flexible and powerful: **variable-length** or get an sub-array of its own
+3. Slices are also **index-based** and have a size, but is **resized when needed**
+
+Update the code
+
+```go
+package main
+
+import "fmt"
+
+func main()  {
+	var conferenceName string = "Go Conference"
+	const conferenceTickets int = 50
+	var remainingTickets uint = 50
+
+	// use "Slice" to declare 
+	var bookings []string
+	// Syntax Sweet
+	// bookings := []string{}
+
+	fmt.Printf("Welcome to %v booking application\n", conferenceName)
+	fmt.Printf("We have total of %v tickets and %v are still available.\n", conferenceTickets, remainingTickets)
+	fmt.Println("Get your tickets here to attend")  
+
+	var firstName string
+	var lastName string
+	var email string
+	var userTickets uint
+
+	fmt.Println("Enter your first name:")
+	fmt.Scan(&firstName)
+
+	fmt.Println("Enter your last name:")
+	fmt.Scan(&lastName)
+
+	fmt.Println("Enter your email:")
+	fmt.Scan(&email)
+
+	fmt.Println("Enter number of tickets:")
+	fmt.Scan(&userTickets)
+
+	remainingTickets -= userTickets
+	// add a element to "Slice"
+	bookings = append(bookings, firstName + " " + lastName)
+	
+	fmt.Printf("The whole slice: %v\n", bookings)
+	fmt.Printf("The first value: %v\n", bookings[0])
+	fmt.Printf("Slice type: %T\n", bookings)
+	fmt.Printf("Slice Size: %v\n", len(bookings)) 
+
+	fmt.Printf("Tank you %v %v for booking %v tickets. You will receive a email at %v\n", firstName, lastName, userTickets, email)
+	fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
+}
+// Welcome to Go Conference booking application
+// We have total of 50 tickets and 50 are still available.
+// Get your tickets here to attend
+// Enter your first name:
+// Leo
+// Enter your last name:
+// Li
+// Enter your email:
+// 2315831906@qq.com
+// Enter number of tickets:
+// 12
+
+// The whole slice: [Leo Li]
+// The first value: Leo Li
+// Slice type: []string
+// Slice Size: 1
+
+// Tank you Leo Li for booking 12 tickets. You will receive a email at 2315831906@qq.com
+// 38 tickets remaining for Go Conference
+```
+
+### for & forEach
+
+Use
+
+```go
+for {
+  // do something
+}
+```
+
+to loop the same logic 
+
+and 
+
+Use
+
+```go
+for index, item := range list {
+  // index: for each item index
+  // item: for each item element
+  
+  // do something  
+}
+```
+
+to loop the list and update the item element
+
+```go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main()  {
+	var conferenceName string = "Go Conference"
+	const conferenceTickets int = 50
+	var remainingTickets uint = 50
+	var bookings []string
+
+	fmt.Printf("Welcome to %v booking application\n", conferenceName)
+	fmt.Printf("We have total of %v tickets and %v are still available.\n", conferenceTickets, remainingTickets)
+	fmt.Println("Get your tickets here to attend")  
+
+	// Loop with "for"
+	for {
+		var firstName string
+		var lastName string
+		var email string
+		var userTickets uint
+	
+		fmt.Println("Enter your first name:")
+		fmt.Scan(&firstName)
+	
+		fmt.Println("Enter your last name:")
+		fmt.Scan(&lastName)
+	
+		fmt.Println("Enter your email:")
+		fmt.Scan(&email)
+	
+		fmt.Println("Enter number of tickets:")
+		fmt.Scan(&userTickets)
+	
+		remainingTickets -= userTickets
+		bookings = append(bookings, firstName + " " + lastName)
+		
+		fmt.Printf("Tank you %v %v for booking %v tickets. You will receive a email at %v\n", firstName, lastName, userTickets, email)
+		fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
+
+		firstNames := []string{}
+		// Loop with "forEach"
+		/* 
+			Blank Identifier: "_"
+				* To ignore a variable you don't want to use
+				* So with Go you need to make unused variables explicit
+		*/
+		for _, booking := range bookings {
+			/* 
+				strings.Fields: Splits the string with white space as separator
+				for example: "Leo Li"  => ["Leo", "Li"]
+			*/
+			var names = strings.Fields(booking)
+			firstNames = append(firstNames, names[0])
+		}
+	
+		fmt.Printf("These are all our booking: %v\n", firstNames)
+	}
+}
+```
+
+### Condition & Boolean Data Type
+
+```go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main()  {
+	var conferenceName string = "Go Conference"
+	const conferenceTickets int = 50
+	var remainingTickets uint = 50
+	var bookings []string
+
+	fmt.Printf("Welcome to %v booking application\n", conferenceName)
+	fmt.Printf("We have total of %v tickets and %v are still available.\n", conferenceTickets, remainingTickets)
+	fmt.Println("Get your tickets here to attend")  
+
+	// add condition to judge
+	for remainingTickets > 0 && len(bookings) < 50 {
+		var firstName string
+		var lastName string
+		var email string
+		var userTickets uint
+	
+		fmt.Println("Enter your first name:")
+		fmt.Scan(&firstName)
+	
+		fmt.Println("Enter your last name:")
+		fmt.Scan(&lastName)
+	
+		fmt.Println("Enter your email:")
+		fmt.Scan(&email)
+	
+		fmt.Println("Enter number of tickets:")
+		fmt.Scan(&userTickets)
+
+		// add condition to judge
+		if userTickets <= remainingTickets {
+			remainingTickets -= userTickets
+			bookings = append(bookings, firstName + " " + lastName)
+			
+			fmt.Printf("Tank you %v %v for booking %v tickets. You will receive a email at %v\n", firstName, lastName, userTickets, email)
+			fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
+	
+			firstNames := []string{}
+			for _, booking := range bookings {
+				var names = strings.Fields(booking)
+				firstNames = append(firstNames, names[0])
+			}
+		
+			fmt.Printf("These are all our booking: %v\n", firstNames)
+	
+			// add condition to judge
+			if remainingTickets <= 0 {
+				// end program
+				fmt.Println("Our conference is booked out. Come back next year.")
+				break
+			}
+		}else {
+			fmt.Printf("We only have %v tickets remaining, so you can't book %v tickets\n", remainingTickets, userTickets)
+		}
+		
+	} 
+} 
+```
+
+### Validate User Input
+
+```go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main()  {
+	var conferenceName string = "Go Conference"
+	const conferenceTickets int = 50
+	var remainingTickets uint = 50
+	var bookings []string
+
+	fmt.Printf("Welcome to %v booking application\n", conferenceName)
+	fmt.Printf("We have total of %v tickets and %v are still available.\n", conferenceTickets, remainingTickets)
+	fmt.Println("Get your tickets here to attend")  
+
+	for remainingTickets > 0 && len(bookings) < 50 {
+		var firstName string
+		var lastName string
+		var email string
+		var userTickets uint
+	
+		fmt.Println("Enter your first name:")
+		fmt.Scan(&firstName)
+	
+		fmt.Println("Enter your last name:")
+		fmt.Scan(&lastName)
+	
+		fmt.Println("Enter your email:")
+		fmt.Scan(&email)
+	
+		fmt.Println("Enter number of tickets:")
+		fmt.Scan(&userTickets)
+
+		// add validate user input
+		isValidName := len(firstName) >= 2 && len(lastName) >= 2
+		isValidEmail := strings.Contains(email, "@")
+		isValidTicketNumber := userTickets > 0 && userTickets <= remainingTickets
+
+		if isValidName && isValidEmail && isValidTicketNumber {
+			remainingTickets -= userTickets
+			bookings = append(bookings, firstName + " " + lastName)
+			
+			fmt.Printf("Tank you %v %v for booking %v tickets. You will receive a email at %v\n", firstName, lastName, userTickets, email)
+			fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
+	
+			firstNames := []string{}
+			for _, booking := range bookings {
+				var names = strings.Fields(booking)
+				firstNames = append(firstNames, names[0])
+			}
+		
+			fmt.Printf("These are all our booking: %v\n", firstNames)
+	
+			if remainingTickets <= 0 {
+				fmt.Println("Our conference is booked out. Come back next year.")
+				break
+			}
+		}else {
+			if !isValidName {
+				fmt.Println("First name or last name you entered is too short")
+			}
+			if !isValidEmail {
+				fmt.Println("Email address you entered doesn't contain @ sign")
+			}
+			if !isValidTicketNumber {
+				fmt.Println("Number of tickets you entered is invalid")
+			}
+		}
+	} 
+} 
+```
+
+### Switch Statement
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+func main()  {
+	city := "Singapore"
+
+	switch city {
+		case "New York":
+			fmt.Print("1")
+		case "Singapore", "Hong Kong":
+			fmt.Print("2")
+		case "London", "Berlin":
+			fmt.Print("3")
+		case "Mexico City":
+			fmt.Print("4")
+		default: 
+			fmt.Print("No valid city selected")
+	}
+} 
+// print:
+// 2
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

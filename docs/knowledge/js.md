@@ -392,14 +392,14 @@ Animal.prototype.getName = function() {
 }
 
 function Dog() {
-    // 继承 Animal 并传参
+    // 盗用 Animal 构造函数并传参
     Animal.call(this, ...arguments);
     // 获取最后一个参数
     let lastArgs = Array.prototype.pop.call(arguments);
     this.legs = lastArgs;
 }
 
-// 原型链的核心代码
+// 原型链的核心代码: 继承 Animal
 Dog.prototype = new Animal();
 Dog.prototype.sayLegs = function() {
     console.log(this.legs);
@@ -1015,6 +1015,12 @@ Promise.any = function(promiseArr) {
 ```
 
 ## Map和WeakMap、Set和WeakSet的区别
+
+### 流程图原理解析
+
+![](https://tva1.sinaimg.cn/large/e6c9d24egy1h4xdiudt1aj20rg1a1q5a.jpg)
+
+地址: https://www.processon.com/diagraming/62ee69d16376896d3874458c
 
 ### Set和WeakSet
 

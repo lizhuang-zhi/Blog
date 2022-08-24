@@ -39,7 +39,8 @@ module.exports = {
         home: '/',
         logo: '/images/logo.JPG',
         // 顶部导航栏
-        navbar: [{
+        navbar: [
+            {
                 text: '面经复盘',
                 link: '/interview/',
             },
@@ -58,6 +59,10 @@ module.exports = {
             {
                 text: '编程书籍资源',
                 link: '/books/',
+            },
+            {
+                text: '公司项目问题review',
+                link: '/problem/',
             },
         ],
         repo: 'https://github.com/lizhuang-zhi',
@@ -100,6 +105,12 @@ module.exports = {
                 text: '书籍分享',
                 children: [
                     '/books/main.md'
+                ],
+            }, ],
+            '/problem/': [{
+                text: '公司项目问题review',
+                children: [
+                    '/problem/main.md'
                 ],
             }, ],
         },
