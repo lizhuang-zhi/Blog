@@ -59,13 +59,14 @@ export default {
 报错信息: 针对子组件报错(`Son.vue`)
 
 ```html
-Avoid mutating a prop directly since the value will be overwritten whenever the parent component re-renders. Instead, use a data or computed property based on the prop's value. Prop being mutated: "show"
+[Vue warn]: Avoid mutating a prop directly since the value will be overwritten whenever the parent component re-renders. Instead, use a data or computed property based on the prop's value. Prop being mutated: "show"
 
-<div>
-  <div>
-    123
-  </div>
-</div>
+found in
+
+---> <Son> at src/components/son.vue
+       <Father> at src/views/father.vue
+         <App> at src/App.vue
+           <Root>
 ```
 
 > 明确问题 & 造成原因
