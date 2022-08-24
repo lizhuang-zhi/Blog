@@ -1,1 +1,0 @@
-const e={key:"v-ca97092e",path:"/problem/",title:"\u516C\u53F8\u9879\u76EE\u95EE\u9898review",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:null,contributors:[]},filePathRelative:"problem/README.md"};export{e as data};
