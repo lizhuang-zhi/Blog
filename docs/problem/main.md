@@ -32,8 +32,15 @@ export default {
 
 ```vue
 <template>
-  <!-- 补充代码 -->
+  <div>
+    <van-popup closeable v-model="show" @close="onClose">
+      <div>
+        <slot></slot>
+  		</div>
+    </van-popup>
+  </div>
 </template>
+
 <script>
 export default {
   name: "Son",
@@ -82,7 +89,7 @@ found in
 ```vue
 <template>
 	<button @click="onShowSonComponent">点击显示子组件</button>
-	<son :show="showDialog" @update:show="onUpdateShow"></son>
+	<son :show="showDialog" @updateEvent="onUpdateShow"></son>
 </template>
 <script>
 export default {
@@ -108,8 +115,15 @@ export default {
 
 ```vue
 <template>
-  <!-- 补充代码 -->
+  <div>
+    <van-popup closeable v-model="isShow" @close="onClose">
+      <div>
+        <slot></slot>
+  		</div>
+    </van-popup>
+  </div>
 </template>
+
 <script>
 export default {
   name: "Son",
@@ -136,7 +150,7 @@ export default {
     onClose() {
       // 当点击关闭时, 会改变 isShow 为 false, 需要将此时的 isShow 的值传回父组件, 实现双向绑定
       // 子 => 父
-      this.$emit('update:show', false)
+      this.$emit('updateEvent', false)
     }
   }
 };
@@ -146,3 +160,88 @@ export default {
 > 问题本质
 
 **这样便实现了父子组件间数据的双向绑定**, 解决该问题, 所以*该问题的本质, 其实就是如何在**Vue2**中实现子父组件间数据的双向绑定 ! !*
+
+> 补充另一种方式
+
+也是在之前的基础上改动, 将子穿父的方式改为 `this.$emit("update: propsName", value)`
+
+父组件`Father.vue`
+
+```vue
+<template>
+	<button @click="onShowSonComponent">点击显示子组件</button>
+	<!-- 
+		改动: 
+			1.不用在这里实现子组件中的 this.$emit('update:show', false)
+			2.添加 .sync
+	-->
+	<son :show.sync="showDialog"></son>
+</template>
+<script>
+export default {
+  name: "Father",
+  data(){
+    return{
+      showDialog: false
+    }
+  },
+  methods: {
+    onShowSonComponent() {
+      this.showDialog = true;
+    },
+    // 去掉了 onUpdateShow 的实现
+  }
+};
+</script>
+```
+
+子组件`Son.vue`
+
+```vue
+<template>
+  <div>
+    <van-popup closeable v-model="isShow" @close="onClose">
+      <div>
+        <slot></slot>
+  		</div>
+    </van-popup>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "Son",
+  props: {
+    show: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data(){
+    return{
+      isShow : this.show
+    }
+  },
+  watch() {
+    show: function(val) {
+      this.isShow = val;
+    } 
+  },
+  methods: {
+    onClose() {
+      // 改动: 这里的 show 就是指 props 中的 show
+      this.$emit('update:show', false)
+    }
+  }
+};
+</script>
+```
+
+
+
+
+
+
+
+
+
