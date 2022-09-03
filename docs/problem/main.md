@@ -4,6 +4,19 @@
 
 > 报错源
 
+报错信息: 针对子组件报错(`Son.vue`)
+
+```vue
+[Vue warn]: Avoid mutating a prop directly since the value will be overwritten whenever the parent component re-renders. Instead, use a data or computed property based on the prop's value. Prop being mutated: "show"
+
+found in
+
+---> <Son> at src/components/son.vue
+       <Father> at src/views/father.vue
+         <App> at src/App.vue
+           <Root>
+```
+
 父组件`Father.vue`
 
 ```vue
@@ -38,6 +51,7 @@ export default {
         <slot></slot>
   		</div>
     </van-popup>
+   	<div @click="updateShow">子组件中直接修改show</div>
   </div>
 </template>
 
@@ -55,25 +69,12 @@ export default {
     }
   },
   methods: {
-    onClose() {
-      this.$emit('update:show', false)
+		updateShow() {
+      this.show = "update data";
     }
   }
 };
 </script>
-```
-
-报错信息: 针对子组件报错(`Son.vue`)
-
-```html
-[Vue warn]: Avoid mutating a prop directly since the value will be overwritten whenever the parent component re-renders. Instead, use a data or computed property based on the prop's value. Prop being mutated: "show"
-
-found in
-
----> <Son> at src/components/son.vue
-       <Father> at src/views/father.vue
-         <App> at src/App.vue
-           <Root>
 ```
 
 > 明确问题 & 造成原因
