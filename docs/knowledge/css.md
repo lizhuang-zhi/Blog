@@ -1693,3 +1693,109 @@ you can try this code in your bower
 </form>
 ```
 
+# 区分offsetWidth, clientWidth, scrollWidth, 以及innerWidth
+
+直接通过运行代码来区分:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box {
+            width: 200px;
+            height: 200px;
+            background: pink;
+            overflow: scroll;
+        }
+
+        .box .item {
+            width: 400px;
+            height: 400px;
+            background: orange;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="box">
+        <div class="item">子元素item</div>
+    </div>
+
+    <script>
+        let boxDOM = document.querySelector(".box");
+        // content + padding + (滚动条) + border  =  183 + 0 + 17 +  0 （滚动条高度包含在padding中）
+        console.log(boxDOM.offsetHeight);    // 200
+        // content + padding  =  183 + 0 （不包含滚动条高度17）
+        console.log(boxDOM.clientHeight);    // 183
+        // content + padding =  400 + 0 (box的实际高度：被item子元素撑开，但是自身只显示200 x 200的部分)
+        console.log(boxDOM.scrollHeight);    // 400
+
+        // window的内部高度，包括横向滚动条
+        console.log(window.innerHeight);     // 648
+        // 整个浏览器窗口的大小，包括窗口标题、工具栏、状态栏
+        console.log(window.outerHeight);     // 772
+        // 电脑屏幕的高度（如果是手机设备，自然是手机的高度）
+        console.log(window.screen.height);    //  1080
+    </script>
+
+</body>
+
+</html>
+```
+
+==注意这里是对于.box元素作为基础DOM, 进行区分属性==
+
+offsetHeight: 
+
+![](https://tva1.sinaimg.cn/large/008vxvgGgy1h8oq9l5oy9j315s0pp0vw.jpg)
+
+clientHeight: 
+
+![](https://tva1.sinaimg.cn/large/008vxvgGgy1h8oqb4ym4bj313t0o277b.jpg)
+
+scrollHeight: 
+
+![](https://tva1.sinaimg.cn/large/008vxvgGgy1h8oqbxk1msj31320ndju2.jpg)
+
+window.innerHeight: 
+
+![](https://tva1.sinaimg.cn/large/008vxvgGgy1h8oqcd6iffj313c0nn41e.jpg)
+
+window.outerHeight: 
+
+![](https://tva1.sinaimg.cn/large/008vxvgGgy1h8oqcnledqj31520oljul.jpg)
+
+window.screen.height: 
+
+![](https://tva1.sinaimg.cn/large/008vxvgGgy1h8oqdatvkmj30x70mu0vx.jpg)
+
+补充几张图:
+
+![](https://tva1.sinaimg.cn/large/008vxvgGgy1h8oqdyfpkbj30hy0d2jsb.jpg)
+
+![](https://tva1.sinaimg.cn/large/008vxvgGgy1h8oqf1zwe8j30t80hpn00.jpg)
+
+![](https://tva1.sinaimg.cn/large/008vxvgGgy1h8oqe43wrxj30e70bhdgh.jpg)
+
+## 最后说一下 XXXTop
+
+- `offsetTop` 是当前元素顶部距离最近父元素顶部的距离,和有没有滚动条没有关系
+- `scrollTop` 在有滚动条的情况下，为元素可视区域距离元素顶部的像素，也就是已经滚动了多少距离
+
+![](https://tva1.sinaimg.cn/large/008vxvgGgy1h8oqh9y1y4j30cg08edft.jpg)
+
+![](https://tva1.sinaimg.cn/large/008vxvgGgy1h8oqhf47i2j30e70bhq3p.jpg)
+
+参考链接：
+
+1. [小结clientHeight，innerHeight，offsetHeight，scrollHeight - 掘金](https://juejin.cn/post/7014115502712684557)
+2. [彻底弄清元素的 offsetHeight、scrollHeight、clientHeight... - 掘金](https://juejin.cn/post/6844904110198636557#heading-4)
+3. [图解scrollHeight, clientHeight, offsetHeight, scrollTop以及获取方法 - 掘金](https://juejin.cn/post/6844903488124633096)
+

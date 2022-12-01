@@ -42,7 +42,7 @@
        console.log(this);
      }
    };
-   person.skill();  // {name: "leo", skill: ƒ}
+   person.skill();  // {name: "leo", skill: ƒ, hobby: ƒ}
    /* 
      因为person本身是没有作用域的，故
      箭头函数要往更外层寻找，所以找到
