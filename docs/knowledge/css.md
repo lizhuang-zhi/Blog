@@ -1693,7 +1693,7 @@ you can try this code in your bower
 </form>
 ```
 
-# 区分offsetWidth, clientWidth, scrollWidth, 以及innerWidth
+## 区分offsetWidth, clientWidth, scrollWidth, 以及innerWidth
 
 直接通过运行代码来区分:
 
@@ -1784,7 +1784,7 @@ window.screen.height:
 
 ![](https://tva1.sinaimg.cn/large/008vxvgGgy1h8oqe43wrxj30e70bhdgh.jpg)
 
-## 最后说一下 XXXTop
+### 最后说一下 XXXTop
 
 - `offsetTop` 是当前元素顶部距离最近父元素顶部的距离,和有没有滚动条没有关系
 - `scrollTop` 在有滚动条的情况下，为元素可视区域距离元素顶部的像素，也就是已经滚动了多少距离
