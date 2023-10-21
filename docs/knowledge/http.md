@@ -1215,3 +1215,10 @@ SPDY和WebSocket的关系比较复杂。
 技术蛋老师的视频(推荐): https://www.bilibili.com/video/BV1ob4y1Y7Ep?spm_id_from=333.337.search-card.all.click
 
 [傻傻分不清之 Cookie、Session、Token、JWT - 掘金](https://juejin.cn/post/6844904034181070861)
+
+## keep-alive小知识
+1. http1.0中不支持长连接
+2. http1.1中支持长连接，所以可以在请求标头中看到connection: keep-alive
+3. 而http2中取消了该属性，所以网页中基于http2的请求没有connection: keep-alive
+
+tips：不是所有 HTTPS 请求都使用 HTTP/2 协议。如果客户端和服务器都支持 HTTP/2，并且配置启用了 HTTP/2，那么它们就会选择使用 HTTP/2。但是，如果其中一方不支持或者配置禁用了 HTTP/2，那么可能会回退到使用先前的协议，比如 HTTP/1.1
