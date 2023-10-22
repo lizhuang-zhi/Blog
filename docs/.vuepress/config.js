@@ -39,8 +39,7 @@ module.exports = {
         home: '/',
         logo: '/images/logo.JPG',
         // 顶部导航栏
-        navbar: [
-            {
+        navbar: [{
                 text: '面经复盘',
                 link: '/interview/',
             },
@@ -63,7 +62,7 @@ module.exports = {
             {
                 text: '公司项目问题review',
                 link: '/problem/',
-            }, 
+            },
         ],
         repo: 'https://github.com/lizhuang-zhi',
         sidebar: {
@@ -87,6 +86,13 @@ module.exports = {
                     '/knowledge/summary.md',
                     '/knowledge/answerinput.md',
                     '/knowledge/frontopti.md',
+                ],
+            }, ],
+            '/foundation/': [{
+                text: '基础知识(暂时只有js)',
+                children: [
+                    // 使用 * 匹配 foundation 目录下的所有 .md 文件
+                    '/foundation/*.md',
                 ],
             }, ],
             '/wrongexam/': [{
