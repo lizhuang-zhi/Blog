@@ -92,7 +92,7 @@ module.exports = {
                 text: '基础知识(暂时只有js)',
                 children: [
                     // 使用 * 匹配 foundation 目录下的所有 .md 文件
-                    '/foundation/*.md',
+                    '/foundation/JS — 集合引用类型与迭代器、生成器.md',
                 ],
             }, ],
             '/wrongexam/': [{
