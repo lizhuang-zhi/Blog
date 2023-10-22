@@ -107,18 +107,18 @@ module.exports = {
                     '/review/main.md'
                 ],
             }, ],
-            '/books/': [{
-                text: '书籍分享',
-                children: [
-                    '/books/main.md'
-                ],
-            }, ],
-            '/problem/': [{
-                text: '公司项目问题review',
-                children: [
-                    '/problem/main.md'
-                ],
-            }, ],
+            // '/books/': [{
+            //     text: '书籍分享',
+            //     children: [
+            //         '/books/main.md'
+            //     ],
+            // }, ],
+            // '/problem/': [{
+            //     text: '公司项目问题review',
+            //     children: [
+            //         '/problem/main.md'
+            //     ],
+            // }, ],
         },
         editLink: false,
     },
