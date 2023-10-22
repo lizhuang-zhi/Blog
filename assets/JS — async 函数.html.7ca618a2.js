@@ -1,0 +1,1 @@
+import{_ as e,o as a,c as s,a as _,b as c}from"./app.fc2879aa.js";const t={},n={id:"async-\u51FD\u6570",tabindex:"-1"},o=_("a",{class:"header-anchor",href:"#async-\u51FD\u6570","aria-hidden":"true"},"#",-1),r=c(" async \u51FD\u6570"),d=[o,r];function h(i,f){return a(),s("h1",n,d)}var m=e(t,[["render",h],["__file","JS \u2014 async \u51FD\u6570.html.vue"]]);export{m as default};

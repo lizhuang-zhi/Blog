@@ -1,0 +1,1 @@
+const t={key:"v-1afcb246",path:"/foundation/JS%20%E2%80%94%20async%20%E5%87%BD%E6%95%B0.html",title:"async \u51FD\u6570",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1697964176e3,contributors:[{name:"Mr.KLeo",email:"59167582+lizhuang-zhi@users.noreply.github.com",commits:1}]},filePathRelative:"foundation/JS \u2014 async \u51FD\u6570.md"};export{t as data};

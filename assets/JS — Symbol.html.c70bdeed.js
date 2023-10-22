@@ -1,0 +1,1 @@
+const t={key:"v-7d0fc79c",path:"/foundation/JS%20%E2%80%94%20Symbol.html",title:"JS \u2014 Symbol",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1697964464e3,contributors:[{name:"Mr.KLeo",email:"59167582+lizhuang-zhi@users.noreply.github.com",commits:2}]},filePathRelative:"foundation/JS \u2014 Symbol.md"};export{t as data};
