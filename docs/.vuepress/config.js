@@ -48,6 +48,10 @@ module.exports = {
                 link: '/knowledge/',
             },
             {
+                text: '基础知识',
+                link: '/foundation/',
+            },
+            {
                 text: '笔试错题总结',
                 link: '/wrongexam/',
             },
@@ -92,7 +96,7 @@ module.exports = {
                 text: '基础知识(暂时只有js)',
                 children: [
                     // 使用 * 匹配 foundation 目录下的所有 .md 文件
-                    '/foundation/JS — 集合引用类型与迭代器、生成器.md',
+                    '/foundation/*.md',
                 ],
             }, ],
             '/wrongexam/': [{
@@ -107,18 +111,18 @@ module.exports = {
                     '/review/main.md'
                 ],
             }, ],
-            // '/books/': [{
-            //     text: '书籍分享',
-            //     children: [
-            //         '/books/main.md'
-            //     ],
-            // }, ],
-            // '/problem/': [{
-            //     text: '公司项目问题review',
-            //     children: [
-            //         '/problem/main.md'
-            //     ],
-            // }, ],
+            '/books/': [{
+                text: '书籍分享',
+                children: [
+                    '/books/main.md'
+                ],
+            }, ],
+            '/problem/': [{
+                text: '公司项目问题review',
+                children: [
+                    '/problem/main.md'
+                ],
+            }, ],
         },
         editLink: false,
     },
