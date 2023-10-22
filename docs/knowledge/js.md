@@ -1539,3 +1539,5 @@ console.log(str.substring(-7, -5));  // 空字符串
 console.log(str.substr(-3, 2));  // rl
 ```
 
+添加测试
+<img src="..\image-20201029131156631.png" alt="image-20210214100518700" style="zoom:67%;" />
