@@ -1540,4 +1540,4 @@ console.log(str.substr(-3, 2));  // rl
 ```
 
 添加测试
-<img src="..\img\image-20201029131156631.png" alt="" style="zoom:67%;" />
+<img src="..\..\img\image-20201029131156631.png" alt="" style="zoom:67%;" />
