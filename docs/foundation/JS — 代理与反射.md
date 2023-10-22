@@ -56,7 +56,7 @@ console.log(proxy.constructor === Object);  // true
 
 具体的原型图：
 
-<img src="..\JS_img\image-20210705094108504.png" alt="image-20210705094108504" style="zoom:90%;" />
+<img src="/images/JS_img/image-20210705094108504.png" alt="image-20210705094108504" style="zoom:90%;" />
 
 ## 定义捕获器
 

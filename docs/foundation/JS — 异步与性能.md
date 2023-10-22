@@ -10,7 +10,7 @@ console.log(a);
 a.index++;
 ```
 
-<img src="..\JS_img\image-20210625144621851.png" alt="image-20210625144621851" style="zoom:80%;" />
+<img src="/images/JS_img/image-20210625144621851.png" alt="image-20210625144621851" style="zoom:80%;" />
 
 对于这段简单的代码会看到一个意外的结果，这可能是**`I/O`的异步化**造成的。代码运行时，浏览器可能会认为需要把控制延迟到后台，在这种情况下，等到浏览器控制台输出对象内容时，`a.index++`可能已经执行，因此会显示`{ index:2 }`
 
@@ -34,13 +34,13 @@ console.log(JSON.stringify(a));   // {"index":2}
 
 就是针对与**单核CPU**，我们往往需要在建立的**多任务之间来回切换**（但是切换的速度很快，用户无法察觉），实现视觉上的 “同时” 进行
 
-<img src="..\JS_img\image-20210625154800094.png" alt="image-20210625154800094" style="zoom:77%;" />
+<img src="/images/JS_img/image-20210625154800094.png" alt="image-20210625154800094" style="zoom:77%;" />
 
 > 并行
 
 对于**多核CPU**，每个**独立**的CPU执行各自的进程，**两个进程互不抢占CPU资源**，可以同时进行
 
-<img src="..\JS_img\image-20210625154836956.png" alt="image-20210625154836956" style="zoom:77%;" />
+<img src="/images/JS_img/image-20210625154836956.png" alt="image-20210625154836956" style="zoom:77%;" />
 
 # 链式流
 

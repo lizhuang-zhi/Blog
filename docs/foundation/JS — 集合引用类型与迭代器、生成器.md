@@ -377,9 +377,9 @@ Set会维护插入时顺序，因此支持按顺序迭代
 
 ==注意：不是说Array、Arguments、Set等就是迭代器，他们只是不同的数据结构，而迭代器只是一种接口，当这些数据结构实现了这个接口，他们就具有迭代的能力。==
 
-<img src="..\JS_img\image-20201125152606923.png" alt="image-20201125152606923" style="zoom:67%;" />
+<img src="/images/JS_img/image-20201125152606923.png" alt="image-20201125152606923" style="zoom:67%;" />
 
-<img src="..\JS_img\image-20201125153048804.png" alt="image-20201125153048804" style="zoom:67%;" />
+<img src="/images/JS_img/image-20201125153048804.png" alt="image-20201125153048804" style="zoom:67%;" />
 
 #### 可迭代协议
 

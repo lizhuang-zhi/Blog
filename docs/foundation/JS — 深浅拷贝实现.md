@@ -4,11 +4,11 @@
 
 > 浅拷贝
 
-<img src="..\JS_img\image-20210326133616349.png" alt="image-20210326133616349" style="zoom:80%;" />
+<img src="/images/JS_img/image-20210326133616349.png" alt="image-20210326133616349" style="zoom:80%;" />
 
 > 深拷贝
 
-<img src="..\JS_img\image-20210326133650753.png" alt="image-20210326133650753" style="zoom:80%;" />
+<img src="/images/JS_img/image-20210326133650753.png" alt="image-20210326133650753" style="zoom:80%;" />
 
 ## 浅拷贝
 
