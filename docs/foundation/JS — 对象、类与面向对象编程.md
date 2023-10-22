@@ -505,19 +505,21 @@ console.log(per.constructor === Object);  // true
 ```
 
 因为：
-
-![图片来源于王福明博客](/images/JS_img/70)
+<!-- TODO: 待补充 -->
+<!-- ![图片来源于王福明博客](/images/JS_img/70) -->
 
 由于==obj对象本质上是由Object函数创建的==，所以实例对象obj的`__proto__`属性与Object函数的prototype属性都指向Object的原型对象
 
 > 1. ==正常的原型链都会终止于Object的原型对象==
 > 2. ==Object原型的原型对象是null==
 
-![这里写图片描述](/images/JS_img/71)
+<!-- TODO: 待补充 -->
+<!-- ![这里写图片描述](/images/JS_img/71)  -->
 
 > 函数也是一种对象，函数也有`__proto__`吗?
 
-![这里写图片描述](/images/JS_img/72)
+<!-- TODO: 待补充 -->
+<!-- ![这里写图片描述](/images/JS_img/72) -->
 
 Function也是一个函数，函数是一种对象，也有`__proto__`属性。既然是函数，那么它一定是被Function创建。所以==Function（构造函数）是被自身创建的，所以它的隐式proto属性指向了自身的原型对象==
 
@@ -527,11 +529,13 @@ Function也是一个函数，函数是一种对象，也有`__proto__`属性。�
 
 答案是of course！因为Function.prototype指向的原型对象（其实Function.prototype是一个函数）也是一个被Object创建的普通对象，故of course！
 
-![这里写图片描述](/images/JS_img/73)
+<!-- TODO: 待补充 -->
+<!-- ![这里写图片描述](/images/JS_img/73) -->
 
 > 总结上述内容
 
-![这里写图片描述](/images/JS_img/74)
+<!-- TODO: 待补充 -->
+<!-- ![这里写图片描述](/images/JS_img/74) -->
 
 ##### ==原生原型==
 
