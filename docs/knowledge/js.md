@@ -1538,6 +1538,3 @@ console.log(str.slice(0, -1));  // hello worl
 console.log(str.substring(-7, -5));  // 空字符串
 console.log(str.substr(-3, 2));  // rl
 ```
-
-添加测试
-<img src="/images/image-20201029131156631.png" alt="" style="zoom:67%;" />
